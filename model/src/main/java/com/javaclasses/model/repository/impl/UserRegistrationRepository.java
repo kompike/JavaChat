@@ -2,18 +2,14 @@ package com.javaclasses.model.repository.impl;
 
 import com.javaclasses.model.entity.User;
 import com.javaclasses.model.entity.tynitype.UserId;
-import com.javaclasses.model.repository.Repository;
+import com.javaclasses.model.repository.InMemoryRepository;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
- * {@link Repository} implementation for user entity
+ * {@link InMemoryRepository} implementation for user entity
  */
-public class UserRegistrationRepository implements Repository<User, UserId> {
-
-    private Map<UserId, User> users = new HashMap<>();
+public class UserRegistrationRepository extends InMemoryRepository<User, UserId> {
 
     private long idCounter = 1;
 
@@ -30,22 +26,11 @@ public class UserRegistrationRepository implements Repository<User, UserId> {
         return userRegistrationRepository;
     }
 
-    @Override
-    public UserId add(User user) {
+    public UserId register(User user) {
         final UserId userId = new UserId(idCounter++);
-        user.setId(userId);
-        users.put(userId, user);
+        user.setUserId(userId);
+        add(user, userId);
         return userId;
-    }
-
-    @Override
-    public User find(UserId userId) {
-        return users.get(userId);
-    }
-
-    @Override
-    public Collection<User> findAll() {
-        return users.values();
     }
 
     public User findByNickname(String nickname) {

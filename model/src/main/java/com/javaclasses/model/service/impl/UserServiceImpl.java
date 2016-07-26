@@ -42,19 +42,24 @@ public class UserServiceImpl implements UserService {
         checkNotNull(password, "Password cannot be null");
         checkNotNull(confirmPassword, "Confirmed password cannot be null");
 
-        if (userRegistrationRepository.findByNickname(nickname) != null) {
+        final String userName = nickname.trim();
+
+        if (userRegistrationRepository.findByNickname(userName) != null) {
             throw new UserRegistrationException("User with given nickname already exists.");
         }
-        if (nickname.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+        if (userName.contains(" ")) {
+            throw new UserRegistrationException("Nickname cannot contain gaps.");
+        }
+        if (userName.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
             throw new UserRegistrationException("All fields must be filled.");
         }
         if (!password.equals(confirmPassword)){
             throw new UserRegistrationException("Passwords does not match.");
         }
 
-        final User user = new User(nickname, password);
+        final User user = new User(userName, password);
 
-        return userRegistrationRepository.add(user);
+        return userRegistrationRepository.register(user);
     }
 
     @Override
@@ -73,6 +78,6 @@ public class UserServiceImpl implements UserService {
             throw new UserAuthenticationException("Incorrect login/password");
         }
 
-        return userAuthenticationRepository.add(user);
+        return userAuthenticationRepository.login(user);
     }
 }

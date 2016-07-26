@@ -5,19 +5,17 @@ import com.javaclasses.model.entity.tynitype.UserId;
 /**
  * User entity implementation
  */
-public class User implements Entity<UserId> {
+public class User {
 
     private UserId userId;
     private String nickname;
     private String password;
 
-    @Override
-    public UserId getId() {
+    public UserId getUserId() {
         return userId;
     }
 
-    @Override
-    public void setId(UserId userId) {
+    public void setUserId(UserId userId) {
         this.userId = userId;
     }
 

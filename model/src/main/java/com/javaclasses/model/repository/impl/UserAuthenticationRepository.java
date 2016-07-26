@@ -2,18 +2,12 @@ package com.javaclasses.model.repository.impl;
 
 import com.javaclasses.model.entity.User;
 import com.javaclasses.model.entity.tynitype.Token;
-import com.javaclasses.model.repository.Repository;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import com.javaclasses.model.repository.InMemoryRepository;
 
 /**
- * {@link Repository} implementation for authenticated users
+ * {@link InMemoryRepository} implementation for authenticated users
  */
-public class UserAuthenticationRepository implements Repository<User,Token> {
-
-    private Map<Token, User> authenticatedUsers = new HashMap<>();
+public class UserAuthenticationRepository extends InMemoryRepository<User,Token> {
 
     private static UserAuthenticationRepository userRepository;
 
@@ -28,20 +22,9 @@ public class UserAuthenticationRepository implements Repository<User,Token> {
         return userRepository;
     }
 
-    @Override
-    public Token add(User user) {
-        final Token token = new Token(user.getId().getId());
-        authenticatedUsers.put(token, user);
+    public Token login(User user) {
+        final Token token = new Token(user.getUserId().getUserId());
+        add(user, token);
         return token;
-    }
-
-    @Override
-    public User find(Token token) {
-        return authenticatedUsers.get(token);
-    }
-
-    @Override
-    public Collection<User> findAll() {
-        return authenticatedUsers.values();
     }
 }

@@ -3,7 +3,7 @@ package com.javaclasses.model.entity.tynitype;
 /**
  * Tiny type for user's unique identifier
  */
-public class UserId implements EntityId {
+public class UserId {
 
     private final long userId;
 
@@ -11,8 +11,7 @@ public class UserId implements EntityId {
         this.userId = userId;
     }
 
-    @Override
-    public long getId() {
+    public long getUserId() {
         return userId;
     }
 

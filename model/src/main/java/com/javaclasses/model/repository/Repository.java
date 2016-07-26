@@ -7,7 +7,7 @@ import java.util.Collection;
  */
 public interface Repository<Type, Id> {
 
-    Id add(Type type);
+    Id add(Type type, Id typeId);
 
     Type find(Id typeId);
 
