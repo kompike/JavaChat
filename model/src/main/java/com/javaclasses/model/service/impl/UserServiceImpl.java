@@ -1,8 +1,10 @@
 package com.javaclasses.model.service.impl;
 
 import com.javaclasses.model.entity.User;
+import com.javaclasses.model.entity.tynitype.Password;
 import com.javaclasses.model.entity.tynitype.Token;
 import com.javaclasses.model.entity.tynitype.UserId;
+import com.javaclasses.model.entity.tynitype.UserName;
 import com.javaclasses.model.repository.impl.UserAuthenticationRepository;
 import com.javaclasses.model.repository.impl.UserRegistrationRepository;
 import com.javaclasses.model.service.UserAuthenticationException;
@@ -85,7 +87,7 @@ public class UserServiceImpl implements UserService {
             throw new UserRegistrationException("Passwords does not match.");
         }
 
-        final User user = new User(userName, password);
+        final User user = new User(new UserName(userName), new Password(password));
 
         try {
             return userRegistrationRepository.register(user);
@@ -119,7 +121,7 @@ public class UserServiceImpl implements UserService {
 
             throw new UserAuthenticationException("Incorrect login/password.");
         }
-        if (!user.getPassword().equals(password)) {
+        if (!user.getPassword().getPassword().equals(password)) {
 
             if (log.isWarnEnabled()) {
                 log.warn("Incorrect login/password.");

@@ -55,7 +55,7 @@ public class UserRegistrationRepository extends InMemoryRepository<User, UserId>
         User user = null;
 
         for (User currentUser : users) {
-            if (currentUser.getNickname().equals(nickname)) {
+            if (currentUser.getUserName().getName().equals(nickname)) {
                 user = currentUser;
                 break;
             }

@@ -32,7 +32,7 @@ public class UserServiceShould {
         final User user = registrationRepository.find(userId);
 
         assertEquals("Actual nickname of registered user does not equal expected.",
-                nickname, user.getNickname());
+                nickname, user.getUserName().getName());
     }
 
     @Test
@@ -45,7 +45,7 @@ public class UserServiceShould {
         final User user = registrationRepository.find(userId);
 
         assertEquals("Actual nickname of registered user does not equal expected.",
-                nickname, user.getNickname());
+                nickname, user.getUserName().getName());
 
         try {
             userService.register(nickname, password, confirmPassword);
@@ -111,7 +111,7 @@ public class UserServiceShould {
         final User user = registrationRepository.find(userId);
 
         assertEquals("Actual nickname of registered user does not equal expected.",
-                nickname, user.getNickname());
+                nickname, user.getUserName().getName());
 
         try {
             final String nicknameWithWhitespaces = "   UserWithWhitespaces   ";
@@ -134,13 +134,13 @@ public class UserServiceShould {
         final User user = registrationRepository.find(userId);
 
         assertEquals("Actual nickname of registered user does not equal expected.",
-                nickname, user.getNickname());
+                nickname, user.getUserName().getName());
 
         final Token token = userService.login(nickname, password);
         final User loggedUser = authenticationRepository.find(token);
 
         assertEquals("Actual nickname of logged user does not equal expected.",
-                nickname, loggedUser.getNickname());
+                nickname, loggedUser.getUserName().getName());
     }
 
     @Test
@@ -169,7 +169,7 @@ public class UserServiceShould {
         final User user = registrationRepository.find(userId);
 
         assertEquals("Actual nickname of registered user does not equal expected.",
-                nickname, user.getNickname());
+                nickname, user.getUserName().getName());
 
         try {
             userService.login(nickname, "pass");

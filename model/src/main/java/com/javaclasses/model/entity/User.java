@@ -1,6 +1,8 @@
 package com.javaclasses.model.entity;
 
+import com.javaclasses.model.entity.tynitype.Password;
 import com.javaclasses.model.entity.tynitype.UserId;
+import com.javaclasses.model.entity.tynitype.UserName;
 
 /**
  * User entity implementation
@@ -8,8 +10,13 @@ import com.javaclasses.model.entity.tynitype.UserId;
 public class User {
 
     private UserId userId;
-    private String nickname;
-    private String password;
+    private UserName userName;
+    private Password password;
+
+    public User(UserName userName, Password password) {
+        this.userName = userName;
+        this.password = password;
+    }
 
     public UserId getUserId() {
         return userId;
@@ -19,24 +26,19 @@ public class User {
         this.userId = userId;
     }
 
-    public String getNickname() {
-        return nickname;
+    public UserName getUserName() {
+        return userName;
     }
 
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
+    public void setUserName(UserName userName) {
+        this.userName = userName;
     }
 
-    public String getPassword() {
+    public Password getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public User(String nickname, String password) {
-        this.nickname = nickname;
+    public void setPassword(Password password) {
         this.password = password;
     }
 
@@ -48,7 +50,7 @@ public class User {
         User user = (User) o;
 
         if (!userId.equals(user.userId)) return false;
-        if (!nickname.equals(user.nickname)) return false;
+        if (!userName.equals(user.userName)) return false;
         return password.equals(user.password);
 
     }
