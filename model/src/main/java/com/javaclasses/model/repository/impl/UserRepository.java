@@ -11,8 +11,6 @@ import java.util.Collection;
  */
 public class UserRepository extends InMemoryRepository<UserId, User> {
 
-    private static final Object ID_LOCK = new Object();
-
     private static UserRepository userRepository;
 
     private long idCounter = 1;
@@ -44,9 +42,6 @@ public class UserRepository extends InMemoryRepository<UserId, User> {
 
     @Override
     protected UserId generateId() {
-        synchronized (ID_LOCK) {
-
-            return new UserId(idCounter++);
-        }
+        return new UserId(idCounter++);
     }
 }

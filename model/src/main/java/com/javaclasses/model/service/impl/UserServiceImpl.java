@@ -240,6 +240,20 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public void delete(UserId userId) {
+
+        if (log.isInfoEnabled()) {
+            log.info("Start deleting user with id: " + userId.getId());
+        }
+
+        userRepository.delete(userId);
+
+        if (log.isInfoEnabled()) {
+            log.info("User successfully deleted.");
+        }
+    }
+
     private UserDTO createUserDTOFromUser(User user) {
 
         return new UserDTO(user.getId().getId(), user.getUserName().getName());

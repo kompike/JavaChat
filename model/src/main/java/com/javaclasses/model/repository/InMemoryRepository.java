@@ -4,8 +4,8 @@ import com.javaclasses.model.entity.Entity;
 import com.javaclasses.model.entity.tinytype.EntityId;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Abstract implementation of {@link Repository} interface
@@ -13,7 +13,7 @@ import java.util.Map;
 public abstract class InMemoryRepository<TypeId extends EntityId, Type extends Entity>
         implements Repository<TypeId, Type> {
 
-    private Map<TypeId, Type> entities = new HashMap<>();
+    private Map<TypeId, Type> entities = new ConcurrentHashMap<>();
 
     @Override
     public TypeId add(Type type) {
@@ -33,6 +33,11 @@ public abstract class InMemoryRepository<TypeId extends EntityId, Type extends E
     @Override
     public Collection<Type> findAll() {
         return entities.values();
+    }
+
+    @Override
+    public void delete(TypeId typeId) {
+        entities.remove(typeId);
     }
 
     protected abstract TypeId generateId();

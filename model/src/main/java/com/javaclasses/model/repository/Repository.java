@@ -15,4 +15,6 @@ public interface Repository<TypeId extends EntityId, Type extends Entity> {
     Type findById(TypeId typeId);
 
     Collection<Type> findAll();
+
+    void delete(TypeId typeId);
 }

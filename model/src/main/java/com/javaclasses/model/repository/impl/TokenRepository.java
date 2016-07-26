@@ -9,8 +9,6 @@ import com.javaclasses.model.repository.InMemoryRepository;
  */
 public class TokenRepository extends InMemoryRepository<TokenId, Token> {
 
-    private static final Object ID_LOCK = new Object();
-
     private static TokenRepository tokenRepository;
 
     private long idCounter = 1;
@@ -28,9 +26,6 @@ public class TokenRepository extends InMemoryRepository<TokenId, Token> {
 
     @Override
     protected TokenId generateId() {
-        synchronized (ID_LOCK) {
-
-            return new TokenId(idCounter++);
-        }
+        return new TokenId(idCounter++);
     }
 }

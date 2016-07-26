@@ -26,4 +26,6 @@ public interface UserService {
     UserDTO findByToken(Token token);
 
     Collection<UserDTO> findAll();
+
+    void delete(UserId userId);
 }
