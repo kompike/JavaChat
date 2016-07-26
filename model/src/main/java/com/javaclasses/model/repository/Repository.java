@@ -5,11 +5,11 @@ import java.util.Collection;
 /**
  * Basic interface for CRUD operations
  */
-public interface Repository<Type, TypeId> {
+public interface Repository<Type, Id> {
 
-    TypeId add(Type type);
+    Id add(Type type);
 
-    Type findById(TypeId typeId);
+    Type find(Id typeId);
 
     Collection<Type> findAll();
 }
