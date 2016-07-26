@@ -17,9 +17,10 @@ public abstract class InMemoryRepository<TypeId extends EntityId, Type extends E
 
     @Override
     public TypeId add(Type type) {
-
         final TypeId typeId = generateId();
+
         type.setId(typeId);
+
         entities.put(typeId, type);
 
         return typeId;

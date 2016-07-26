@@ -11,8 +11,6 @@ public class TokenRepository extends InMemoryRepository<TokenId, Token> {
 
     private static TokenRepository tokenRepository;
 
-    private long idCounter = 1;
-
     private TokenRepository() {
     }
 
@@ -26,6 +24,6 @@ public class TokenRepository extends InMemoryRepository<TokenId, Token> {
 
     @Override
     protected TokenId generateId() {
-        return new TokenId(idCounter++);
+        return new TokenId(System.nanoTime());
     }
 }
