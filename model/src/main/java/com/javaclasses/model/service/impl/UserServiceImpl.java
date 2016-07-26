@@ -11,6 +11,19 @@ import com.javaclasses.model.service.UserService;
  */
 public class UserServiceImpl implements UserService {
 
+    private static UserServiceImpl userService;
+
+    private UserServiceImpl() {
+    }
+
+    public static UserServiceImpl getInstance() {
+        if (userService == null) {
+            userService = new UserServiceImpl();
+        }
+
+        return userService;
+    }
+
     @Override
     public UserId register(String nickname, String pssword, String confirmPassword)
             throws UserRegistrationException {
