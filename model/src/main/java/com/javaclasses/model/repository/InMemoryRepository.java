@@ -1,5 +1,8 @@
 package com.javaclasses.model.repository;
 
+import com.javaclasses.model.entity.Entity;
+import com.javaclasses.model.entity.tynitype.EntityId;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -7,12 +10,14 @@ import java.util.Map;
 /**
  * Abstract instance of {@link Repository} with internal memory
  */
-public abstract class InMemoryRepository<Type, TypeId> implements Repository<Type, TypeId> {
+public abstract class InMemoryRepository<Type extends Entity, TypeId extends EntityId> implements Repository<Type, TypeId> {
 
     private Map<TypeId, Type> entities = new HashMap<>();
 
     @Override
-    public TypeId add(Type type, TypeId typeId) {
+    public TypeId add(Type type) {
+        final TypeId typeId = nextId();
+        type.setId(typeId);
         entities.put(typeId, type);
         return typeId;
     }
@@ -26,4 +31,6 @@ public abstract class InMemoryRepository<Type, TypeId> implements Repository<Typ
     public Collection<Type> findAll() {
         return entities.values();
     }
+
+    public abstract TypeId nextId();
 }
