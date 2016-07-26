@@ -20,11 +20,11 @@ public abstract class InMemoryRepository<Type, Id>
 
     @Override
     public Type find(Id typeId) {
-        return null;
+        return entities.get(typeId);
     }
 
     @Override
     public Collection<Type> findAll() {
-        return null;
+        return entities.values();
     }
 }

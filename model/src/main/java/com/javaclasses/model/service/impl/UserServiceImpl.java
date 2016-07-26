@@ -72,10 +72,10 @@ public class UserServiceImpl implements UserService {
         final User user = userRegistrationRepository.findByNickname(nickname);
 
         if (user == null) {
-            throw new UserAuthenticationException("Incorrect login/password");
+            throw new UserAuthenticationException("Incorrect login/password.");
         }
         if (!user.getPassword().equals(password)) {
-            throw new UserAuthenticationException("Incorrect login/password");
+            throw new UserAuthenticationException("Incorrect login/password.");
         }
 
         return userAuthenticationRepository.login(user);
