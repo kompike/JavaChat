@@ -1,0 +1,4 @@
+rootProject.name = 'JavaChat'
+include 'model'
+include 'webapp'
+
