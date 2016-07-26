@@ -1,15 +1,18 @@
 package com.javaclasses.model.repository;
 
+import com.javaclasses.model.entity.Entity;
+import com.javaclasses.model.entity.tinytype.EntityId;
+
 import java.util.Collection;
 
 /**
  * Basic interface for CRUD operations
  */
-public interface Repository<Type, Id> {
+public interface Repository<TypeId extends EntityId, Type extends Entity> {
 
-    Id add(Type type, Id typeId);
+    TypeId add(Type type);
 
-    Type find(Id typeId);
+    Type findById(TypeId typeId);
 
     Collection<Type> findAll();
 }

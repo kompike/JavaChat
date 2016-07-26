@@ -1,4 +1,4 @@
-package com.javaclasses.model.entity.tynitype;
+package com.javaclasses.model.entity.tinytype;
 
 /**
  * Tiny type for username

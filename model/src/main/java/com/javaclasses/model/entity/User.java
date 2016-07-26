@@ -1,13 +1,13 @@
 package com.javaclasses.model.entity;
 
-import com.javaclasses.model.entity.tynitype.Password;
-import com.javaclasses.model.entity.tynitype.UserId;
-import com.javaclasses.model.entity.tynitype.UserName;
+import com.javaclasses.model.entity.tinytype.Password;
+import com.javaclasses.model.entity.tinytype.UserId;
+import com.javaclasses.model.entity.tinytype.UserName;
 
 /**
  * User entity implementation
  */
-public class User {
+public class User implements Entity<UserId> {
 
     private UserId userId;
     private UserName userName;
@@ -18,11 +18,13 @@ public class User {
         this.password = password;
     }
 
-    public UserId getUserId() {
+    @Override
+    public UserId getId() {
         return userId;
     }
 
-    public void setUserId(UserId userId) {
+    @Override
+    public void setId(UserId userId) {
         this.userId = userId;
     }
 
@@ -30,16 +32,8 @@ public class User {
         return userName;
     }
 
-    public void setUserName(UserName userName) {
-        this.userName = userName;
-    }
-
     public Password getPassword() {
         return password;
-    }
-
-    public void setPassword(Password password) {
-        this.password = password;
     }
 
     @Override

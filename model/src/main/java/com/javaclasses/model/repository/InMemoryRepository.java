@@ -1,28 +1,32 @@
 package com.javaclasses.model.repository;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.javaclasses.model.entity.Entity;
+import com.javaclasses.model.entity.tinytype.EntityId;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Abstract implementation of {@link Repository} interface
  */
-public abstract class InMemoryRepository<Type, Id>
-        implements Repository<Type, Id> {
+public abstract class InMemoryRepository<TypeId extends EntityId, Type extends Entity>
+        implements Repository<TypeId, Type> {
 
-    private Map<Id, Type> entities = new ConcurrentHashMap<>();
+    private Map<TypeId, Type> entities = new HashMap<>();
 
     @Override
-    public Id add(Type type, Id typeId) {
+    public TypeId add(Type type) {
+
+        final TypeId typeId = generateId();
+        type.setId(typeId);
         entities.put(typeId, type);
+
         return typeId;
     }
 
     @Override
-    public Type find(Id typeId) {
+    public Type findById(TypeId typeId) {
         return entities.get(typeId);
     }
 
@@ -30,4 +34,6 @@ public abstract class InMemoryRepository<Type, Id>
     public Collection<Type> findAll() {
         return entities.values();
     }
+
+    protected abstract TypeId generateId();
 }
