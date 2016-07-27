@@ -1,13 +1,13 @@
 package com.javaclasses.webapp;
 
-import com.javaclasses.model.service.UserRegistrationException;
-import com.javaclasses.webapp.command.Command;
+import com.javaclasses.webapp.command.Controller;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 public class DispatcherServlet extends HttpServlet {
 
@@ -23,21 +23,15 @@ public class DispatcherServlet extends HttpServlet {
         execute(request, response);
     }
 
-    private void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private void execute(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        final String commandName = request.getParameter("command");
+        final String uri = request.getRequestURI();
+        final String method = request.getMethod().toLowerCase();
 
-        Command command = registry.getCommand(commandName);
-
-        String responseData;
-
-        try {
-            System.out.println("responseData = command.execute(request, response)");
-            responseData = command.execute(request, response);
-        } catch (UserRegistrationException e) {
-            responseData = e.getMessage();
-        }
-
-        request.getRequestDispatcher(responseData).forward(request, response);
+        final Controller controller = registry.getController(uri, method);
+        final String jsonEntity = controller.execute(request);
+        final PrintWriter printWriter = response.getWriter();
+        printWriter.write(jsonEntity);
+        response.setStatus(200);
     }
 }

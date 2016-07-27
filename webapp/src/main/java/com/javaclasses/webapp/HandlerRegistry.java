@@ -1,7 +1,9 @@
 package com.javaclasses.webapp;
 
-import com.javaclasses.webapp.command.Command;
-import com.javaclasses.webapp.command.impl.RegistrationCommand;
+import com.javaclasses.webapp.command.Controller;
+import com.javaclasses.webapp.command.impl.ErrorController;
+import com.javaclasses.webapp.command.impl.HomeController;
+import com.javaclasses.webapp.command.impl.RegistrationController;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,11 +23,25 @@ public class HandlerRegistry  {
         return handlerRegistry;
     }
 
-    private final Map<String, Command> registry = new HashMap<String, Command>(){{
-        put("register", new RegistrationCommand());
+    private final Map<String, HashMap<String, Controller>> registry =
+            new HashMap<String, HashMap<String, Controller>>(){{
+        put("/register", new HashMap<String, Controller>(){{
+            put("get", new RegistrationController());
+            put("post", new RegistrationController());
+        }});
+        put("/", new HashMap<String, Controller>(){{
+            put("get", new HomeController());
+            put("post", new HomeController());
+        }});
     }};
 
-    public Command getCommand(String commandName) {
-        return registry.get(commandName);
+    public Controller getController(String uri, String method) {
+        final HashMap<String, Controller> controllerHashMap = registry.get(uri);
+
+        if (controllerHashMap == null) {
+            return new ErrorController();
+        }
+
+        return controllerHashMap.get(method);
     }
 }

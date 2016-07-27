@@ -8,21 +8,19 @@ import com.javaclasses.model.entity.tinytype.UserId;
 import com.javaclasses.model.service.UserRegistrationException;
 import com.javaclasses.model.service.UserService;
 import com.javaclasses.model.service.impl.UserServiceImpl;
-import com.javaclasses.webapp.command.Command;
+import com.javaclasses.webapp.command.Controller;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
- * Implementation of {@link Command} interface for registration process
+ * Implementation of {@link Controller} interface for registration execute
  */
-public class RegistrationCommand implements Command {
+public class RegistrationController implements Controller {
 
     private final UserService userService = UserServiceImpl.getInstance();
 
     @Override
-    public String execute(HttpServletRequest request, HttpServletResponse response)
-            throws UserRegistrationException {
+    public String execute(HttpServletRequest request) {
 
         final String nickname = request.getParameter("nickname");
         final String password = request.getParameter("password");
@@ -31,11 +29,16 @@ public class RegistrationCommand implements Command {
         final RegistrationDTO registrationDTO =
                 new RegistrationDTO(nickname, password, confirmPassword);
 
-        final UserId userId = userService.register(registrationDTO);
-        final UserDTO registeredUser = userService.findById(userId);
-
         final Gson gson = new GsonBuilder().create();
+        String jsonString;
+        try {
+            UserId userId = userService.register(registrationDTO);
+            UserDTO registeredUser = userService.findById(userId);
+            jsonString = gson.toJson(registeredUser);
+        } catch (UserRegistrationException e) {
+            jsonString = e.getMessage();
+        }
 
-        return gson.toJson(registeredUser);
+        return jsonString;
     }
 }
