@@ -1,5 +1,6 @@
 package com.javaclasses.webapp.command.impl;
 
+import com.javaclasses.webapp.JsonEntity;
 import com.javaclasses.webapp.command.Controller;
 
 import javax.servlet.http.HttpServletRequest;
@@ -7,9 +8,14 @@ import javax.servlet.http.HttpServletRequest;
 public class ErrorController implements Controller {
 
     @Override
-    public String execute(HttpServletRequest request) {
-        return "<html><body>" +
-                "<h1>404</h1>" +
-                "</body></html>";
+    public JsonEntity execute(HttpServletRequest request) {
+
+        final String errorMessage = "Page not found";
+
+        final JsonEntity jsonEntity = new JsonEntity();
+        jsonEntity.add("errorMessage", errorMessage);
+        jsonEntity.add("responseStatus", "404");
+
+        return jsonEntity;
     }
 }

@@ -1,13 +1,12 @@
 package com.javaclasses.webapp.command.impl;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.javaclasses.model.dto.RegistrationDTO;
 import com.javaclasses.model.dto.UserDTO;
 import com.javaclasses.model.entity.tinytype.UserId;
 import com.javaclasses.model.service.UserRegistrationException;
 import com.javaclasses.model.service.UserService;
 import com.javaclasses.model.service.impl.UserServiceImpl;
+import com.javaclasses.webapp.JsonEntity;
 import com.javaclasses.webapp.command.Controller;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,7 +19,7 @@ public class RegistrationController implements Controller {
     private final UserService userService = UserServiceImpl.getInstance();
 
     @Override
-    public String execute(HttpServletRequest request) {
+    public JsonEntity execute(HttpServletRequest request) {
 
         final String nickname = request.getParameter("nickname");
         final String password = request.getParameter("password");
@@ -29,16 +28,19 @@ public class RegistrationController implements Controller {
         final RegistrationDTO registrationDTO =
                 new RegistrationDTO(nickname, password, confirmPassword);
 
-        final Gson gson = new GsonBuilder().create();
-        String jsonString;
+        final JsonEntity jsonEntity = new JsonEntity();
         try {
-            UserId userId = userService.register(registrationDTO);
-            UserDTO registeredUser = userService.findById(userId);
-            jsonString = gson.toJson(registeredUser);
+            final UserId userId = userService.register(registrationDTO);
+            final UserDTO registeredUser = userService.findById(userId);
+            jsonEntity.add("userId", String.valueOf(registeredUser.getUserId().getId()));
+            jsonEntity.add("userName", registeredUser.getUserName());
+            jsonEntity.add("message", "User successfully registered");
+            jsonEntity.add("responseStatus", "200");
         } catch (UserRegistrationException e) {
-            jsonString = e.getMessage();
+            jsonEntity.add("errorMessage", e.getMessage());
+            jsonEntity.add("responseStatus", "404");
         }
 
-        return jsonString;
+        return jsonEntity;
     }
 }

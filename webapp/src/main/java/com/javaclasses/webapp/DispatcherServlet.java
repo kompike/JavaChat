@@ -29,9 +29,10 @@ public class DispatcherServlet extends HttpServlet {
         final String method = request.getMethod().toLowerCase();
 
         final Controller controller = registry.getController(uri, method);
-        final String jsonEntity = controller.execute(request);
+        final JsonEntity jsonEntity = controller.execute(request);
+
         final PrintWriter printWriter = response.getWriter();
-        printWriter.write(jsonEntity);
-        response.setStatus(200);
+        printWriter.write(jsonEntity.createJson());
+        response.setStatus(jsonEntity.getResponseStatus());
     }
 }

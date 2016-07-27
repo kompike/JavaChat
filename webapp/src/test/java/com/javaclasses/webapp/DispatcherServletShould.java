@@ -31,7 +31,7 @@ public class DispatcherServletShould {
         post.setHeader("User-Agent", USER_AGENT);
 
         List<NameValuePair> urlParameters = new ArrayList<>();
-        urlParameters.add(new BasicNameValuePair("nickname", "nickname_" + (Math.random() * 25)));
+        urlParameters.add(new BasicNameValuePair("nickname", "nickname"));
         urlParameters.add(new BasicNameValuePair("password", "password"));
         urlParameters.add(new BasicNameValuePair("confirmPassword", "password"));
 
@@ -48,8 +48,9 @@ public class DispatcherServletShould {
             result.append(line);
         }
 
-        System.out.println(result.toString());
-
-        assertTrue("", !result.toString().isEmpty());
+        assertTrue("Result must contain userId field.",
+                result.toString().contains("userId"));
+        assertTrue("Result must contain userName field with 'nickname' value.",
+                result.toString().contains("nickname"));
     }
 }

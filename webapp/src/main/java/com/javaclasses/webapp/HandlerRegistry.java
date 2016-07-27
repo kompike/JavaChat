@@ -2,7 +2,6 @@ package com.javaclasses.webapp;
 
 import com.javaclasses.webapp.command.Controller;
 import com.javaclasses.webapp.command.impl.ErrorController;
-import com.javaclasses.webapp.command.impl.HomeController;
 import com.javaclasses.webapp.command.impl.RegistrationController;
 
 import java.util.HashMap;
@@ -28,10 +27,6 @@ public class HandlerRegistry  {
         put("/register", new HashMap<String, Controller>(){{
             put("get", new RegistrationController());
             put("post", new RegistrationController());
-        }});
-        put("/", new HashMap<String, Controller>(){{
-            put("get", new HomeController());
-            put("post", new HomeController());
         }});
     }};
 

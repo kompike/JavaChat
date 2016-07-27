@@ -1,5 +1,7 @@
 package com.javaclasses.webapp.command;
 
+import com.javaclasses.webapp.JsonEntity;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -7,5 +9,5 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface Controller {
 
-    String execute(HttpServletRequest request);
+    JsonEntity execute(HttpServletRequest request);
 }
