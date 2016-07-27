@@ -4,12 +4,16 @@ import com.javaclasses.model.entity.Token;
 import com.javaclasses.model.entity.tinytype.TokenId;
 import com.javaclasses.model.repository.InMemoryRepository;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 /**
  * {@link InMemoryRepository} implementation for authenticated users
  */
 public class TokenRepository extends InMemoryRepository<TokenId, Token> {
 
     private static TokenRepository tokenRepository;
+
+    private AtomicLong idCounter = new AtomicLong(1);
 
     private TokenRepository() {
     }
@@ -24,6 +28,6 @@ public class TokenRepository extends InMemoryRepository<TokenId, Token> {
 
     @Override
     protected TokenId generateId() {
-        return new TokenId(System.nanoTime());
+        return new TokenId(idCounter.getAndIncrement());
     }
 }

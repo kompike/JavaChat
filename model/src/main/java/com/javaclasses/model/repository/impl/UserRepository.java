@@ -5,6 +5,7 @@ import com.javaclasses.model.entity.tinytype.UserId;
 import com.javaclasses.model.repository.InMemoryRepository;
 
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * {@link InMemoryRepository} implementation for user entity
@@ -13,7 +14,7 @@ public class UserRepository extends InMemoryRepository<UserId, User> {
 
     private static UserRepository userRepository;
 
-    private long idCounter = 1;
+    private AtomicLong idCounter = new AtomicLong(1);
 
     private UserRepository() {
     }
@@ -42,6 +43,6 @@ public class UserRepository extends InMemoryRepository<UserId, User> {
 
     @Override
     protected UserId generateId() {
-        return new UserId(idCounter++);
+        return new UserId(idCounter.getAndIncrement());
     }
 }

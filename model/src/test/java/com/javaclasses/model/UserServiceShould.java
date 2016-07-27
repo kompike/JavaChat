@@ -2,8 +2,8 @@ package com.javaclasses.model;
 
 import com.javaclasses.model.dto.LoginDTO;
 import com.javaclasses.model.dto.RegistrationDTO;
+import com.javaclasses.model.dto.TokenDTO;
 import com.javaclasses.model.dto.UserDTO;
-import com.javaclasses.model.entity.Token;
 import com.javaclasses.model.entity.tinytype.UserId;
 import com.javaclasses.model.service.UserAuthenticationException;
 import com.javaclasses.model.service.UserRegistrationException;
@@ -143,8 +143,8 @@ public class UserServiceShould {
         assertEquals("Actual nickname of registered user does not equal expected.",
                 nickname, userDTO.getUserName());
 
-        final Token token = userService.login(new LoginDTO(nickname, password));
-        final UserDTO loggedUser = userService.findByToken(token);
+        final TokenDTO tokenDTO = userService.login(new LoginDTO(nickname, password));
+        final UserDTO loggedUser = userService.findByToken(tokenDTO.getTokenId());
 
         assertEquals("Actual nickname of logged user does not equal expected.",
                 nickname, loggedUser.getUserName());
@@ -201,7 +201,7 @@ public class UserServiceShould {
         final ExecutorService executorService =
                 Executors.newFixedThreadPool(threadPoolSize);
 
-        final Set<Long> uniqueUserIds = new HashSet<>();
+        final Set<UserId> uniqueUserIds = new HashSet<>();
 
         final Set<UserDTO> loggedUsers = new HashSet<>();
 
@@ -226,8 +226,8 @@ public class UserServiceShould {
                 assertEquals("Actual nickname of registered user does not equal expected.",
                         nickname, userDTO.getUserName());
 
-                final Token token = userService.login(new LoginDTO(nickname, password));
-                final UserDTO loggedUserDTO = userService.findByToken(token);
+                final TokenDTO tokenDTO = userService.login(new LoginDTO(nickname, password));
+                final UserDTO loggedUserDTO = userService.findByToken(tokenDTO.getTokenId());
 
                 assertEquals("Actual nickname of logged user does not equal expected.",
                         nickname, loggedUserDTO.getUserName());
@@ -255,14 +255,14 @@ public class UserServiceShould {
                 uniqueUserIds.size());
 
         for (UserDTO userDTO : userService.findAll()) {
-            userService.delete(new UserId(userDTO.getUserId()));
+            userService.delete(userDTO.getUserId());
         }
     }
 
     @Test
     public void failWhileRegisteringExistingUserInMultipleThreads() throws Exception {
 
-        final int threadPoolSize = 100;
+        final int threadPoolSize = 99;
 
         final CountDownLatch startLatch =
                 new CountDownLatch(threadPoolSize);
@@ -270,7 +270,7 @@ public class UserServiceShould {
         final ExecutorService executorService =
                 Executors.newFixedThreadPool(threadPoolSize);
 
-        final Set<Long> uniqueUserIds = new HashSet<>();
+        final Set<UserId> uniqueUserIds = new HashSet<>();
 
         final List<Future<UserDTO>> futureList = new ArrayList<>();
 
@@ -327,7 +327,7 @@ public class UserServiceShould {
                 uniqueUserIds.size());
 
         for (UserDTO userDTO : userService.findAll()) {
-            userService.delete(new UserId(userDTO.getUserId()));
+            userService.delete(userDTO.getUserId());
         }
     }
 }

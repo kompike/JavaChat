@@ -1,23 +1,42 @@
 package com.javaclasses.model.dto;
 
+import com.javaclasses.model.entity.tinytype.UserId;
+
 /**
  * Data transfer object for user entity
  */
 public class UserDTO {
 
-    private long userId;
+    private UserId userId;
     private String userName;
 
-    public UserDTO(long userId, String userName) {
+    public UserDTO(UserId userId, String userName) {
         this.userId = userId;
         this.userName = userName;
     }
 
-    public long getUserId() {
+    public UserId getUserId() {
         return userId;
     }
 
     public String getUserName() {
         return userName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UserDTO userDTO = (UserDTO) o;
+
+        if (!userId.equals(userDTO.userId)) return false;
+        return userName.equals(userDTO.userName);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return userId.hashCode();
     }
 }

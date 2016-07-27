@@ -2,6 +2,7 @@ package com.javaclasses.model.service.impl;
 
 import com.javaclasses.model.dto.LoginDTO;
 import com.javaclasses.model.dto.RegistrationDTO;
+import com.javaclasses.model.dto.TokenDTO;
 import com.javaclasses.model.dto.UserDTO;
 import com.javaclasses.model.entity.User;
 import com.javaclasses.model.entity.tinytype.Password;
@@ -110,7 +111,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Token login(LoginDTO loginDTO)
+    public TokenDTO login(LoginDTO loginDTO)
             throws UserAuthenticationException {
 
         if (log.isInfoEnabled()) {
@@ -144,9 +145,12 @@ public class UserServiceImpl implements UserService {
 
         final Token token = new Token(user.getId());
         final TokenId tokenId = tokenRepository.add(token);
+        final Token tokenById = tokenRepository.findById(tokenId);
+
+        final TokenDTO tokenDTO = new TokenDTO(tokenById.getId(), tokenById.getUserId());
 
         try {
-            return tokenRepository.findById(tokenId);
+            return tokenDTO;
         } finally {
 
             if (log.isInfoEnabled()) {
@@ -194,11 +198,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO findByToken(Token token) {
+    public UserDTO findByToken(TokenId tokenId) {
 
         if (log.isInfoEnabled()) {
             log.info("Start looking for user by security token...");
         }
+
+        final Token token = tokenRepository.findById(tokenId);
 
         final UserId userId = token.getUserId();
 
@@ -256,6 +262,6 @@ public class UserServiceImpl implements UserService {
 
     private UserDTO createUserDTOFromUser(User user) {
 
-        return new UserDTO(user.getId().getId(), user.getUserName().getName());
+        return new UserDTO(user.getId(), user.getUserName().getName());
     }
 }

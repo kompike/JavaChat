@@ -26,4 +26,25 @@ public class RegistrationDTO {
     public String getConfirmPassword() {
         return confirmPassword;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RegistrationDTO that = (RegistrationDTO) o;
+
+        if (!userName.equals(that.userName)) return false;
+        if (!password.equals(that.password)) return false;
+        return confirmPassword.equals(that.confirmPassword);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = userName.hashCode();
+        result = 31 * result + password.hashCode();
+        result = 31 * result + confirmPassword.hashCode();
+        return result;
+    }
 }
