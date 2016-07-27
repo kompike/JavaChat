@@ -30,6 +30,7 @@ public class RegistrationCommand implements Command {
 
         final RegistrationDTO registrationDTO =
                 new RegistrationDTO(nickname, password, confirmPassword);
+
         final UserId userId = userService.register(registrationDTO);
         final UserDTO registeredUser = userService.findById(userId);
 

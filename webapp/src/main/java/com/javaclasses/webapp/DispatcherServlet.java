@@ -23,7 +23,7 @@ public class DispatcherServlet extends HttpServlet {
         execute(request, response);
     }
 
-    private String execute(HttpServletRequest request, HttpServletResponse response) {
+    private void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         final String commandName = request.getParameter("command");
 
@@ -32,11 +32,12 @@ public class DispatcherServlet extends HttpServlet {
         String responseData;
 
         try {
+            System.out.println("responseData = command.execute(request, response)");
             responseData = command.execute(request, response);
         } catch (UserRegistrationException e) {
             responseData = e.getMessage();
         }
 
-        return responseData;
+        request.getRequestDispatcher(responseData).forward(request, response);
     }
 }
