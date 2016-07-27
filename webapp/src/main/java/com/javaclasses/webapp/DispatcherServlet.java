@@ -23,16 +23,20 @@ public class DispatcherServlet extends HttpServlet {
         execute(request, response);
     }
 
-    private void execute(HttpServletRequest request, HttpServletResponse response) {
+    private String execute(HttpServletRequest request, HttpServletResponse response) {
 
         final String commandName = request.getParameter("command");
 
         Command command = registry.getCommand(commandName);
 
+        String responseData;
+
         try {
-            command.execute(request, response);
+            responseData = command.execute(request, response);
         } catch (UserRegistrationException e) {
-            e.getMessage();
+            responseData = e.getMessage();
         }
+
+        return responseData;
     }
 }

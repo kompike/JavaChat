@@ -6,7 +6,7 @@ import com.javaclasses.webapp.command.impl.RegistrationCommand;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HandlerRegistry {
+public class HandlerRegistry  {
 
     private static HandlerRegistry handlerRegistry;
 
@@ -22,6 +22,7 @@ public class HandlerRegistry {
     }
 
     private final Map<String, Command> registry = new HashMap<String, Command>(){{
+        put("register", new RegistrationCommand());
     }};
 
     public Command getCommand(String commandName) {
