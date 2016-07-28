@@ -1,11 +1,9 @@
 package com.javaclasses.chat.webapp.command.impl;
 
-import com.javaclasses.chat.model.dto.ChatDTO;
-import com.javaclasses.chat.model.dto.MessageDTO;
 import com.javaclasses.chat.model.dto.UserDTO;
 import com.javaclasses.chat.model.entity.tinytype.ChatId;
 import com.javaclasses.chat.model.entity.tinytype.TokenId;
-import com.javaclasses.chat.model.service.ChatJoiningException;
+import com.javaclasses.chat.model.service.ChatLeavingException;
 import com.javaclasses.chat.model.service.ChatService;
 import com.javaclasses.chat.model.service.UserService;
 import com.javaclasses.chat.model.service.impl.ChatServiceImpl;
@@ -16,14 +14,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collection;
 
 /**
- * Implementation of {@link Handler} interface for joining chat process
+ * Implementation of {@link Handler} interface for leaving chat process
  */
-public class JoiningChatController implements Handler {
+public class LeavingChatController implements Handler {
 
-    private final Logger log = LoggerFactory.getLogger(JoiningChatController.class);
+    private final Logger log = LoggerFactory.getLogger(LeavingChatController.class);
 
     private final UserService userService = UserServiceImpl.getInstance();
     private final ChatService chatService = ChatServiceImpl.getInstance();
@@ -41,34 +38,14 @@ public class JoiningChatController implements Handler {
         final ChatId chatId = new ChatId(Long.valueOf(requestChatId));
         final TokenId tokenId = new TokenId(Long.valueOf(requestTokenId));
         final UserDTO user = userService.findByToken(tokenId);
-        final ChatDTO chatDTO = chatService.findById(chatId);
 
         final JsonObject jsonObject = new JsonObject();
 
         try {
-            chatService.joinChat(user.getUserId(), chatId);
-            jsonObject.add("chatId", String.valueOf(chatId.getId()));
-            jsonObject.add("chatName", chatDTO.getChatName());
-
-            final StringBuilder builder = new StringBuilder("[");
-
-            final Collection<MessageDTO> messages = chatService.getChatMessages(chatId);
-            for (MessageDTO messageDTO : messages) {
-                final JsonObject chatJson = new JsonObject();
-                chatJson.add("message", messageDTO.getMessage());
-                final String author = userService.findById(messageDTO.getAuthor()).getUserName();
-                chatJson.add("author", author);
-                builder.append(chatJson.generateJson()).append(",");
-            }
-
-            if (builder.length() > 1) {
-                builder.setLength(builder.length() - 1);
-            }
-            builder.append("]");
-
-            jsonObject.add("messageList", builder.toString());
+            chatService.leaveChat(user.getUserId(), chatId);
+            jsonObject.add("chatId", String.valueOf(chatId));
             jsonObject.setResponseStatusCode(200);
-        } catch (ChatJoiningException e) {
+        } catch (ChatLeavingException e) {
             jsonObject.add("errorMessage", e.getMessage());
             jsonObject.setResponseStatusCode(500);
         }
