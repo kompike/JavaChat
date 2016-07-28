@@ -3,21 +3,15 @@ package com.javaclasses.chat.webapp;
 import com.javaclasses.chat.model.service.UserRegistrationException;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.junit.Test;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.javaclasses.chat.model.service.ErrorMessage.*;
-import static org.apache.http.HttpHeaders.USER_AGENT;
+import static com.javaclasses.chat.webapp.TestUtils.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -26,6 +20,7 @@ public class DispatcherServletShould {
     private static final String URL = "http://localhost:8080/";
     private static final String REGISTRATION_PAGE_URL = URL + "register";
     private static final String LOGIN_PAGE_URL = URL + "login";
+    private static final String CHAT_CREATION_PAGE_URL = URL + "create-chat";
 
     @Test
     public void allowNewUserToRegister() throws IOException {
@@ -190,47 +185,118 @@ public class DispatcherServletShould {
                 "{'errorMessage':'" + INCORRECT_CREDENTIALS + "'}", responseContent);
     }
 
-    private HttpResponse generateResponse(String url, List<NameValuePair> urlParameters)
-            throws IOException {
+    @Test
+    public void allowUserToCreateNewChat() throws IOException {
 
-        final HttpClient client = HttpClientBuilder.create().build();
-        final HttpPost post = new HttpPost(url);
-        post.setHeader("User-Agent", USER_AGENT);
-        post.setEntity(new UrlEncodedFormEntity(urlParameters));
+        final String nickname = "UserWithoutChat";
+        final String password = "NewPassword";
 
-        return client.execute(post);
+        final List<NameValuePair> registrationUrlParameters = getRegistrationUrlParameters(nickname, password, password);
+
+        generateResponse(REGISTRATION_PAGE_URL, registrationUrlParameters);
+
+        final List<NameValuePair> loginUrlParameters = getLoginUrlParameters(nickname, password);
+
+        final String loginResponse = getResponseContent(generateResponse(LOGIN_PAGE_URL, loginUrlParameters));
+        final String tokenId = loginResponse.split(",")[0].split(":")[1].replaceAll("'", "");
+
+        final List<NameValuePair> urlParameters = new ArrayList<>();
+        urlParameters.add(new BasicNameValuePair("chatName", "newChatName"));
+        urlParameters.add(new BasicNameValuePair("tokenId", tokenId));
+
+        final HttpResponse response = generateResponse(CHAT_CREATION_PAGE_URL, urlParameters);
+
+        final String responseContent = getResponseContent(response);
+
+        assertTrue("Result must contain chatList field.",
+                responseContent.contains("chatList"));
     }
 
-    private String getResponseContent(HttpResponse response) throws IOException {
+    @Test
+    public void prohibitCreationOfAlreadyExistingChat() throws IOException {
 
-        final BufferedReader reader = new BufferedReader(
-                new InputStreamReader(response.getEntity().getContent()));
+        final String nickname = "AnotherUserWithoutChat";
+        final String password = "NewPassword";
 
-        final StringBuilder result = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            result.append(line);
-        }
+        final List<NameValuePair> registrationUrlParameters = getRegistrationUrlParameters(nickname, password, password);
 
-        return result.toString();
+        generateResponse(REGISTRATION_PAGE_URL, registrationUrlParameters);
+
+        final List<NameValuePair> loginUrlParameters = getLoginUrlParameters(nickname, password);
+
+        final String loginResponse = getResponseContent(generateResponse(LOGIN_PAGE_URL, loginUrlParameters));
+        final String tokenId = loginResponse.split(",")[0].split(":")[1].replaceAll("'", "");
+
+        final List<NameValuePair> urlParameters = new ArrayList<>();
+        urlParameters.add(new BasicNameValuePair("chatName", "existingChat"));
+        urlParameters.add(new BasicNameValuePair("tokenId", tokenId));
+
+        generateResponse(CHAT_CREATION_PAGE_URL, urlParameters);
+        final HttpResponse response = generateResponse(CHAT_CREATION_PAGE_URL, urlParameters);
+
+        final String responseContent = getResponseContent(response);
+
+        assertEquals("Already existing chat was created.",
+                "{'errorMessage':'" + CHAT_ALREADY_EXISTS + "'}", responseContent);
     }
 
-    private List<NameValuePair> getRegistrationUrlParameters(String nickname, String password, String confirmPassword) {
+    @Test
+    public void checkForEmptyChatNameWhileCreatingNewChat() throws IOException {
 
-        final List<NameValuePair> registrationUrlParameters = new ArrayList<>();
-        registrationUrlParameters.add(new BasicNameValuePair("nickname", nickname));
-        registrationUrlParameters.add(new BasicNameValuePair("password", password));
-        registrationUrlParameters.add(new BasicNameValuePair("confirmPassword", confirmPassword));
+        final String nickname = "JustUser";
+        final String password = "NewPassword";
 
-        return registrationUrlParameters;
+        final List<NameValuePair> registrationUrlParameters = getRegistrationUrlParameters(nickname, password, password);
+
+        generateResponse(REGISTRATION_PAGE_URL, registrationUrlParameters);
+
+        final List<NameValuePair> loginUrlParameters = getLoginUrlParameters(nickname, password);
+
+        final String loginResponse = getResponseContent(generateResponse(LOGIN_PAGE_URL, loginUrlParameters));
+        final String tokenId = loginResponse.split(",")[0].split(":")[1].replaceAll("'", "");
+
+        final List<NameValuePair> urlParameters = new ArrayList<>();
+        urlParameters.add(new BasicNameValuePair("chatName", ""));
+        urlParameters.add(new BasicNameValuePair("tokenId", tokenId));
+
+        final HttpResponse response = generateResponse(CHAT_CREATION_PAGE_URL, urlParameters);
+
+        final String responseContent = getResponseContent(response);
+
+        assertEquals("Already existing chat was created.",
+                "{'errorMessage':'" + CHAT_NAME_CANNOT_BE_EMPTY + "'}", responseContent);
     }
 
-    private List<NameValuePair> getLoginUrlParameters(String nickname, String password) {
+    @Test
+    public void trimChatNameWhileCreatingNewChat() throws IOException {
 
-        final List<NameValuePair> loginUrlParameters = new ArrayList<>();
-        loginUrlParameters.add(new BasicNameValuePair("nickname", nickname));
-        loginUrlParameters.add(new BasicNameValuePair("password", password));
+        final String nickname = "Me";
+        final String password = "MyPass";
 
-        return loginUrlParameters;
+        final List<NameValuePair> registrationUrlParameters = getRegistrationUrlParameters(nickname, password, password);
+
+        generateResponse(REGISTRATION_PAGE_URL, registrationUrlParameters);
+
+        final List<NameValuePair> loginUrlParameters = getLoginUrlParameters(nickname, password);
+
+        final String loginResponse = getResponseContent(generateResponse(LOGIN_PAGE_URL, loginUrlParameters));
+        final String tokenId = loginResponse.split(",")[0].split(":")[1].replaceAll("'", "");
+
+        final List<NameValuePair> urlParameters = new ArrayList<>();
+        urlParameters.add(new BasicNameValuePair("chatName", "chatWithWhiteSpaces"));
+        urlParameters.add(new BasicNameValuePair("tokenId", tokenId));
+
+        generateResponse(CHAT_CREATION_PAGE_URL, urlParameters);
+
+        final List<NameValuePair> newChatUrlParameters = new ArrayList<>();
+        newChatUrlParameters.add(new BasicNameValuePair("chatName", "   chatWithWhiteSpaces   "));
+        newChatUrlParameters.add(new BasicNameValuePair("tokenId", tokenId));
+
+        final HttpResponse response = generateResponse(CHAT_CREATION_PAGE_URL, newChatUrlParameters);
+
+        final String responseContent = getResponseContent(response);
+
+        assertEquals("Already existing chat was created.",
+                "{'errorMessage':'" + CHAT_ALREADY_EXISTS + "'}", responseContent);
     }
 }
