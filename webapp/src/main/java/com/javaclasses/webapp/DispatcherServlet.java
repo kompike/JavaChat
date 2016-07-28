@@ -1,6 +1,6 @@
 package com.javaclasses.webapp;
 
-import com.javaclasses.webapp.command.Controller;
+import com.javaclasses.webapp.command.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,8 +40,8 @@ public class DispatcherServlet extends HttpServlet {
         final String uri = request.getRequestURI();
         final String method = request.getMethod().toLowerCase();
 
-        final Controller controller = registry.getController(uri, method);
-        final JsonEntity jsonEntity = controller.execute(request);
+        final Handler handler = registry.getHandler(uri, method);
+        final JsonEntity jsonEntity = handler.process(request);
 
         final PrintWriter printWriter = response.getWriter();
         printWriter.write(jsonEntity.generateJson());

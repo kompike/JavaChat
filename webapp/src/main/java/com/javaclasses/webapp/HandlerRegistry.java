@@ -1,7 +1,8 @@
 package com.javaclasses.webapp;
 
-import com.javaclasses.webapp.command.Controller;
+import com.javaclasses.webapp.command.Handler;
 import com.javaclasses.webapp.command.impl.ErrorController;
+import com.javaclasses.webapp.command.impl.LoginController;
 import com.javaclasses.webapp.command.impl.RegistrationController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,42 +30,44 @@ public class HandlerRegistry  {
         return handlerRegistry;
     }
 
-    private final Map<String, HashMap<String, Controller>> registry =
-            new HashMap<String, HashMap<String, Controller>>(){{
-        put("/register", new HashMap<String, Controller>(){{
-            put("get", new RegistrationController());
+    private final Map<String, HashMap<String, Handler>> registry =
+            new HashMap<String, HashMap<String, Handler>>(){{
+        put("/register", new HashMap<String, Handler>(){{
             put("post", new RegistrationController());
+        }});
+        put("/login", new HashMap<String, Handler>(){{
+            put("post", new LoginController());
         }});
     }};
 
     /**
-     * Searches controller by given data
+     * Searches handler by given data
      * @param uri Request uri
      * @param method Request method
-     * @return Controller by given data
+     * @return Handler by given data
      */
-    public Controller getController(String uri, String method) {
+    public Handler getHandler(String uri, String method) {
 
         if (log.isInfoEnabled()) {
-            log.info("Start looking for controller by uri: " + uri + " and method: " + method);
+            log.info("Start looking for handler by uri: " + uri + " and method: " + method);
         }
 
-        final HashMap<String, Controller> controllerHashMap = registry.get(uri);
+        final HashMap<String, Handler> handlerHashMap = registry.get(uri);
 
-        if (controllerHashMap == null) {
+        if (handlerHashMap == null) {
             if (log.isWarnEnabled()) {
-                log.warn("Controller by given uri and method not found.");
+                log.warn("Handler by given uri and method not found.");
             }
 
             return new ErrorController();
         }
 
         try {
-            return controllerHashMap.get(method);
+            return handlerHashMap.get(method);
         } finally {
             if (log.isInfoEnabled()) {
-                log.info("Controller successfully found: " +
-                        controllerHashMap.get(method).getClass().getSimpleName());
+                log.info("Handler successfully found: " +
+                        handlerHashMap.get(method).getClass().getSimpleName());
             }
         }
     }

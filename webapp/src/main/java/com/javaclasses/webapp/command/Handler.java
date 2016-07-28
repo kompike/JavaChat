@@ -5,14 +5,14 @@ import com.javaclasses.webapp.JsonEntity;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Interface for abstract command instance
+ * Interface for abstract handler instance
  */
-public interface Controller {
+public interface Handler {
 
     /**
      * Process request data
      * @param request HttpServletRequest from user
      * @return Entity of {@link JsonEntity} with processed data
      */
-    JsonEntity execute(HttpServletRequest request);
+    JsonEntity process(HttpServletRequest request);
 }

@@ -1,9 +1,8 @@
 package com.javaclasses.webapp.command.impl;
 
-import com.javaclasses.model.dto.RegistrationDTO;
-import com.javaclasses.model.dto.UserDTO;
-import com.javaclasses.model.entity.tinytype.UserId;
-import com.javaclasses.model.service.UserRegistrationException;
+import com.javaclasses.model.dto.LoginDTO;
+import com.javaclasses.model.dto.TokenDTO;
+import com.javaclasses.model.service.UserAuthenticationException;
 import com.javaclasses.model.service.UserService;
 import com.javaclasses.model.service.impl.UserServiceImpl;
 import com.javaclasses.webapp.JsonEntity;
@@ -14,11 +13,11 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Implementation of {@link Handler} interface for registration process
+ * Implementation of {@link Handler} interface for login process
  */
-public class RegistrationController implements Handler {
+public class LoginController implements Handler {
 
-    private final Logger log = LoggerFactory.getLogger(RegistrationController.class);
+    private final Logger log = LoggerFactory.getLogger(LoginController.class);
 
     private final UserService userService = UserServiceImpl.getInstance();
 
@@ -31,20 +30,18 @@ public class RegistrationController implements Handler {
 
         final String nickname = request.getParameter("nickname");
         final String password = request.getParameter("password");
-        final String confirmPassword = request.getParameter("confirmPassword");
 
-        final RegistrationDTO registrationDTO =
-                new RegistrationDTO(nickname, password, confirmPassword);
+        final LoginDTO loginDTO =
+                new LoginDTO(nickname, password);
 
         final JsonEntity jsonEntity = new JsonEntity();
         try {
-            final UserId userId = userService.register(registrationDTO);
-            final UserDTO registeredUser = userService.findById(userId);
-            jsonEntity.add("userId", String.valueOf(registeredUser.getUserId().getId()));
-            jsonEntity.add("userName", registeredUser.getUserName());
-            jsonEntity.add("message", "User successfully registered");
+            final TokenDTO tokenDTO = userService.login(loginDTO);
+            jsonEntity.add("tokenId", String.valueOf(tokenDTO.getTokenId().getId()));
+            jsonEntity.add("userName", nickname);
+            jsonEntity.add("message", "User successfully logged in");
             jsonEntity.add("responseStatus", "200");
-        } catch (UserRegistrationException e) {
+        } catch (UserAuthenticationException e) {
             jsonEntity.add("errorMessage", e.getMessage());
             jsonEntity.add("responseStatus", "404");
         }

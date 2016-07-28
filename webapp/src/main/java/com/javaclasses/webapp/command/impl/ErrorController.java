@@ -1,17 +1,17 @@
 package com.javaclasses.webapp.command.impl;
 
 import com.javaclasses.webapp.JsonEntity;
-import com.javaclasses.webapp.command.Controller;
+import com.javaclasses.webapp.command.Handler;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Implementation of {@link Controller} interface for handling error requests
+ * Implementation of {@link Handler} interface for handling error requests
  */
-public class ErrorController implements Controller {
+public class ErrorController implements Handler {
 
     @Override
-    public JsonEntity execute(HttpServletRequest request) {
+    public JsonEntity process(HttpServletRequest request) {
 
         final String errorMessage = "Page not found";
 
