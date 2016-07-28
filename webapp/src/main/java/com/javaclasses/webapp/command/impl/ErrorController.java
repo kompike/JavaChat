@@ -5,6 +5,9 @@ import com.javaclasses.webapp.command.Controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * Implementation of {@link Controller} interface for handling error requests
+ */
 public class ErrorController implements Controller {
 
     @Override

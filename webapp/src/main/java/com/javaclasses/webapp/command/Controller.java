@@ -9,5 +9,10 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface Controller {
 
+    /**
+     * Process request data
+     * @param request HttpServletRequest from user
+     * @return Entity of {@link JsonEntity} with processed data
+     */
     JsonEntity execute(HttpServletRequest request);
 }

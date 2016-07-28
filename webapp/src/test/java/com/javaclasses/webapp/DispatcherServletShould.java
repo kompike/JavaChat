@@ -21,7 +21,7 @@ import static org.junit.Assert.assertTrue;
 public class DispatcherServletShould {
 
     @Test
-    public void allowToRegisterNewUser() throws IOException {
+    public void allowNewUserToRegister() throws IOException {
 
         String url = "http://localhost:8080/register";
 
@@ -30,27 +30,30 @@ public class DispatcherServletShould {
 
         post.setHeader("User-Agent", USER_AGENT);
 
+        final String nickname = "User";
+        final String password = "password";
+
         List<NameValuePair> urlParameters = new ArrayList<>();
-        urlParameters.add(new BasicNameValuePair("nickname", "nickname"));
-        urlParameters.add(new BasicNameValuePair("password", "password"));
-        urlParameters.add(new BasicNameValuePair("confirmPassword", "password"));
+        urlParameters.add(new BasicNameValuePair("nickname", nickname));
+        urlParameters.add(new BasicNameValuePair("password", password));
+        urlParameters.add(new BasicNameValuePair("confirmPassword", password));
 
         post.setEntity(new UrlEncodedFormEntity(urlParameters));
 
         HttpResponse response = client.execute(post);
 
-        BufferedReader rd = new BufferedReader(
+        BufferedReader reader = new BufferedReader(
                 new InputStreamReader(response.getEntity().getContent()));
 
         StringBuilder result = new StringBuilder();
         String line;
-        while ((line = rd.readLine()) != null) {
+        while ((line = reader.readLine()) != null) {
             result.append(line);
         }
 
         assertTrue("Result must contain userId field.",
                 result.toString().contains("userId"));
         assertTrue("Result must contain userName field with 'nickname' value.",
-                result.toString().contains("nickname"));
+                result.toString().contains(nickname));
     }
 }
