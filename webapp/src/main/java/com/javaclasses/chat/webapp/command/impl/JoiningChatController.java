@@ -74,7 +74,7 @@ public class JoiningChatController implements Handler {
         }
 
         try {
-            return null;
+            return jsonObject;
         } finally {
             if (log.isInfoEnabled()) {
                 log.info("User request successfully processed.");
