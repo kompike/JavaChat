@@ -161,13 +161,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO findByName(String userName) {
+    public UserDTO findByName(UserName userName) {
+
+        final String nickname = userName.getName();
 
         if (log.isInfoEnabled()) {
-            log.info("Start looking for user with username: " + userName);
+            log.info("Start looking for user with username: " + nickname);
         }
 
-        final User user = userRepository.findByNickname(userName);
+        final User user = userRepository.findByNickname(nickname);
 
         try {
             return createUserDTOFromUser(user);

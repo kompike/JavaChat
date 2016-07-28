@@ -6,6 +6,7 @@ import com.javaclasses.chat.model.entity.tinytype.UserId;
 import com.javaclasses.chat.model.dto.LoginDTO;
 import com.javaclasses.chat.model.dto.TokenDTO;
 import com.javaclasses.chat.model.dto.UserDTO;
+import com.javaclasses.chat.model.entity.tinytype.UserName;
 
 import java.util.Collection;
 
@@ -37,7 +38,7 @@ public interface UserService {
      * @param userName Username of user to be found
      * @return DTO with user information
      */
-    UserDTO findByName(String userName);
+    UserDTO findByName(UserName userName);
 
     /**
      * Search for user by id

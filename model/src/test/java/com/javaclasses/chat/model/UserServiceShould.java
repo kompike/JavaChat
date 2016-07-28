@@ -2,6 +2,7 @@ package com.javaclasses.chat.model;
 
 import com.javaclasses.chat.model.dto.RegistrationDTO;
 import com.javaclasses.chat.model.entity.tinytype.UserId;
+import com.javaclasses.chat.model.entity.tinytype.UserName;
 import com.javaclasses.chat.model.service.UserAuthenticationException;
 import com.javaclasses.chat.model.service.UserService;
 import com.javaclasses.chat.model.dto.LoginDTO;
@@ -139,7 +140,7 @@ public class UserServiceShould {
         final String password = "password";
 
         final UserId userId = userService.register(new RegistrationDTO(nickname, password, password));
-        final UserDTO userDTO = userService.findByName(nickname);
+        final UserDTO userDTO = userService.findByName(new UserName(nickname));
 
         assertEquals("Actual nickname of registered user does not equal expected.",
                 nickname, userDTO.getUserName());
