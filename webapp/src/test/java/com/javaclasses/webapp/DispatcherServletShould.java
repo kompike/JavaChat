@@ -53,7 +53,43 @@ public class DispatcherServletShould {
 
         assertTrue("Result must contain userId field.",
                 result.toString().contains("userId"));
-        assertTrue("Result must contain userName field with 'nickname' value.",
+        assertTrue("Result must contain userName field with '" + nickname + "' value.",
+                result.toString().contains(nickname));
+    }
+
+    @Test
+    public void allowExistingUserToLogin() throws IOException {
+
+        String url = "http://localhost:8080/login";
+
+        HttpClient client = HttpClientBuilder.create().build();
+        HttpPost post = new HttpPost(url);
+
+        post.setHeader("User-Agent", USER_AGENT);
+
+        final String nickname = "User";
+        final String password = "password";
+
+        List<NameValuePair> urlParameters = new ArrayList<>();
+        urlParameters.add(new BasicNameValuePair("nickname", nickname));
+        urlParameters.add(new BasicNameValuePair("password", password));
+
+        post.setEntity(new UrlEncodedFormEntity(urlParameters));
+
+        HttpResponse response = client.execute(post);
+
+        BufferedReader reader = new BufferedReader(
+                new InputStreamReader(response.getEntity().getContent()));
+
+        StringBuilder result = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            result.append(line);
+        }
+
+        assertTrue("Result must contain tokenId field.",
+                result.toString().contains("tokenId"));
+        assertTrue("Result must contain userName field with '" + nickname + "' value.",
                 result.toString().contains(nickname));
     }
 }

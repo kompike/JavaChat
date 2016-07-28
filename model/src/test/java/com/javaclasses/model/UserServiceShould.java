@@ -291,7 +291,7 @@ public class UserServiceShould {
 
                     try {
                         userService.register(new RegistrationDTO(nickname, password, password));
-                        fail("UserRegistrationException was not thrown.");
+                        fail("UserRegistrationException was not thrown: " + currentIndex);
                     } catch (UserRegistrationException ex) {
                         assertEquals("Wrong message for already existing user.",
                                 "User with given username already exists.", ex.getMessage());
@@ -309,6 +309,7 @@ public class UserServiceShould {
                     assertEquals("Actual nickname of registered user does not equal expected.",
                             nickname, userDTO.getUserName());
                 }
+
                 return userDTO;
             });
 
