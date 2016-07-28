@@ -1,7 +1,6 @@
 package com.javaclasses.chat.model.dto;
 
 import com.javaclasses.chat.model.entity.tinytype.ChatId;
-import com.javaclasses.chat.model.entity.tinytype.ChatName;
 import com.javaclasses.chat.model.entity.tinytype.UserId;
 import com.javaclasses.chat.model.entity.tinytype.UserName;
 
@@ -14,14 +13,14 @@ public class ChatDTO {
 
     private ChatId chatId;
     private UserId owner;
-    private ChatName chatName;
-    private Set<UserName> users;
+    private String chatName;
+    private Set<String> userNameList;
 
-    public ChatDTO(ChatId chatId, UserId owner, ChatName chatName, Set<UserName> users) {
+    public ChatDTO(ChatId chatId, UserId owner, String chatName, Set<String> userNameList) {
         this.chatId = chatId;
         this.owner = owner;
         this.chatName = chatName;
-        this.users = users;
+        this.userNameList = userNameList;
     }
 
     public ChatId getChatId() {
@@ -32,12 +31,12 @@ public class ChatDTO {
         return owner;
     }
 
-    public ChatName getChatName() {
+    public String getChatName() {
         return chatName;
     }
 
-    public Set<UserName> getUsers() {
-        return users;
+    public Set<String> getUserNameList() {
+        return userNameList;
     }
 
     @Override

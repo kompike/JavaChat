@@ -121,9 +121,8 @@ public class UserServiceShould {
                 nickname, userDTO.getUserName());
 
         try {
-            final String nicknameWithWhitespaces = "   UserWithWhitespaces   ";
             userService.register(
-                    new RegistrationDTO(nicknameWithWhitespaces, password, password));
+                    new RegistrationDTO("   UserWithWhitespaces   ", password, password));
             fail("Username was not trimmed.");
         } catch (UserRegistrationException ex) {
             assertEquals("Wrong message for already existing user.",
