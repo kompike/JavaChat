@@ -1,8 +1,8 @@
-package com.javaclasses.model.entity;
+package com.javaclasses.chat.model.entity;
 
-import com.javaclasses.model.entity.tinytype.Password;
-import com.javaclasses.model.entity.tinytype.UserId;
-import com.javaclasses.model.entity.tinytype.UserName;
+import com.javaclasses.chat.model.entity.tinytype.UserId;
+import com.javaclasses.chat.model.entity.tinytype.Password;
+import com.javaclasses.chat.model.entity.tinytype.UserName;
 
 /**
  * User entity implementation

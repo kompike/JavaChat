@@ -1,4 +1,4 @@
-package com.javaclasses.model.dto;
+package com.javaclasses.chat.model.dto;
 
 /**
  * Data transfer object of user registration information

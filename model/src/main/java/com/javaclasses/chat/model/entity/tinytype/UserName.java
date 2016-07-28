@@ -1,4 +1,4 @@
-package com.javaclasses.model.entity.tinytype;
+package com.javaclasses.chat.model.entity.tinytype;
 
 /**
  * Tiny type for username

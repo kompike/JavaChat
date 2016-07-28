@@ -1,11 +1,11 @@
-package com.javaclasses.model.service;
+package com.javaclasses.chat.model.service;
 
-import com.javaclasses.model.dto.LoginDTO;
-import com.javaclasses.model.dto.RegistrationDTO;
-import com.javaclasses.model.dto.TokenDTO;
-import com.javaclasses.model.dto.UserDTO;
-import com.javaclasses.model.entity.tinytype.TokenId;
-import com.javaclasses.model.entity.tinytype.UserId;
+import com.javaclasses.chat.model.dto.RegistrationDTO;
+import com.javaclasses.chat.model.entity.tinytype.TokenId;
+import com.javaclasses.chat.model.entity.tinytype.UserId;
+import com.javaclasses.chat.model.dto.LoginDTO;
+import com.javaclasses.chat.model.dto.TokenDTO;
+import com.javaclasses.chat.model.dto.UserDTO;
 
 import java.util.Collection;
 
@@ -33,21 +33,21 @@ public interface UserService {
             throws UserAuthenticationException;
 
     /**
-     * Searche for user by username
+     * Search for user by username
      * @param userName Username of user to be found
      * @return DTO with user information
      */
     UserDTO findByName(String userName);
 
     /**
-     * Searche for user by id
+     * Search for user by id
      * @param userId Id of user to be found
      * @return DTO with user information
      */
     UserDTO findById(UserId userId);
 
     /**
-     * Searche for user by security token id
+     * Search for user by security token id
      * @param tokenId Security token id of user to be found
      * @return DTO with user information
      */

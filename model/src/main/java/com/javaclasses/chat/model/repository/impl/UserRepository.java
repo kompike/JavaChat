@@ -1,21 +1,20 @@
-package com.javaclasses.model.repository.impl;
+package com.javaclasses.chat.model.repository.impl;
 
-import com.javaclasses.model.entity.User;
-import com.javaclasses.model.entity.tinytype.UserId;
-import com.javaclasses.model.repository.InMemoryRepository;
+import com.javaclasses.chat.model.entity.User;
+import com.javaclasses.chat.model.entity.tinytype.UserId;
+import com.javaclasses.chat.model.repository.InMemoryRepository;
 
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * {@link InMemoryRepository} implementation for user entity
  */
 public class UserRepository extends InMemoryRepository<UserId, User> {
 
-    private static final Object ID_LOCK = new Object();
-
     private static UserRepository userRepository;
 
-    private long idCounter = 1;
+    private AtomicLong idCounter = new AtomicLong(1);
 
     private UserRepository() {
     }
@@ -44,8 +43,6 @@ public class UserRepository extends InMemoryRepository<UserId, User> {
 
     @Override
     protected UserId generateId() {
-        synchronized (ID_LOCK) {
-            return new UserId(idCounter++);
-        }
+        return new UserId(idCounter.getAndIncrement());
     }
 }

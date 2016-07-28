@@ -1,14 +1,14 @@
-package com.javaclasses.model;
+package com.javaclasses.chat.model;
 
-import com.javaclasses.model.dto.LoginDTO;
-import com.javaclasses.model.dto.RegistrationDTO;
-import com.javaclasses.model.dto.TokenDTO;
-import com.javaclasses.model.dto.UserDTO;
-import com.javaclasses.model.entity.tinytype.UserId;
-import com.javaclasses.model.service.UserAuthenticationException;
-import com.javaclasses.model.service.UserRegistrationException;
-import com.javaclasses.model.service.UserService;
-import com.javaclasses.model.service.impl.UserServiceImpl;
+import com.javaclasses.chat.model.dto.RegistrationDTO;
+import com.javaclasses.chat.model.entity.tinytype.UserId;
+import com.javaclasses.chat.model.service.UserAuthenticationException;
+import com.javaclasses.chat.model.service.UserService;
+import com.javaclasses.chat.model.dto.LoginDTO;
+import com.javaclasses.chat.model.dto.TokenDTO;
+import com.javaclasses.chat.model.dto.UserDTO;
+import com.javaclasses.chat.model.service.UserRegistrationException;
+import com.javaclasses.chat.model.service.impl.UserServiceImpl;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -20,6 +20,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import static com.javaclasses.chat.model.service.ErrorMessage.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -58,7 +59,7 @@ public class UserServiceShould {
             fail("Already existing user was registered.");
         } catch (UserRegistrationException ex) {
             assertEquals("Wrong message for already existing user.",
-                    "User with given username already exists.", ex.getMessage());
+                    USER_ALREADY_EXISTS.toString(), ex.getMessage());
 
             userService.delete(userId);
         }
@@ -74,7 +75,7 @@ public class UserServiceShould {
             fail("User with gaps in username was registered.");
         } catch (UserRegistrationException ex) {
             assertEquals("Wrong message for gaps in nickname.",
-                    "Nickname cannot contain gaps.", ex.getMessage());
+                    NICKNAME_CANNOT_CONTAIN_GAPS.toString(), ex.getMessage());
         }
     }
 
@@ -89,7 +90,7 @@ public class UserServiceShould {
             fail("User with different passwords was registered.");
         } catch (UserRegistrationException ex) {
             assertEquals("Wrong message for not equal passwords.",
-                    "Passwords does not match.", ex.getMessage());
+                    PASSWORDS_DOES_NOT_MATCH.toString(), ex.getMessage());
         }
     }
 
@@ -103,7 +104,7 @@ public class UserServiceShould {
             fail("User with empty username was registered.");
         } catch (UserRegistrationException ex) {
             assertEquals("Wrong message for empty fields during registration.",
-                    "All fields must be filled.", ex.getMessage());
+                    ALL_FIELDS_MUST_BE_FILLED.toString(), ex.getMessage());
         }
     }
 
@@ -125,10 +126,25 @@ public class UserServiceShould {
             fail("Username was not trimmed.");
         } catch (UserRegistrationException ex) {
             assertEquals("Wrong message for already existing user.",
-                    "User with given username already exists.", ex.getMessage());
+                    USER_ALREADY_EXISTS.toString(), ex.getMessage());
 
             userService.delete(userId);
         }
+    }
+
+    @Test
+    public void findUserByName() throws UserRegistrationException {
+
+        final String nickname = "User";
+        final String password = "password";
+
+        final UserId userId = userService.register(new RegistrationDTO(nickname, password, password));
+        final UserDTO userDTO = userService.findByName(nickname);
+
+        assertEquals("Actual nickname of registered user does not equal expected.",
+                nickname, userDTO.getUserName());
+
+        userService.delete(userId);
     }
 
     @Test
@@ -163,7 +179,7 @@ public class UserServiceShould {
             fail("Not registered user logged in.");
         } catch (UserAuthenticationException ex) {
             assertEquals("Wrong message for not registered user.",
-                    "Incorrect login/password.", ex.getMessage());
+                    INCORRECT_CREDENTIALS.toString(), ex.getMessage());
         }
     }
 
@@ -184,7 +200,7 @@ public class UserServiceShould {
             fail("User with incorrect password logged in.");
         } catch (UserAuthenticationException ex) {
             assertEquals("Wrong message for incorrect password.",
-                    "Incorrect login/password.", ex.getMessage());
+                    INCORRECT_CREDENTIALS.toString(), ex.getMessage());
 
             userService.delete(userId);
         }
@@ -294,7 +310,7 @@ public class UserServiceShould {
                         fail("UserRegistrationException was not thrown: " + currentIndex);
                     } catch (UserRegistrationException ex) {
                         assertEquals("Wrong message for already existing user.",
-                                "User with given username already exists.", ex.getMessage());
+                                USER_ALREADY_EXISTS.toString(), ex.getMessage());
                     }
                 } else {
 

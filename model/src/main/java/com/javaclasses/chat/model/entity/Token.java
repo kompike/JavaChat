@@ -1,7 +1,7 @@
-package com.javaclasses.model.entity;
+package com.javaclasses.chat.model.entity;
 
-import com.javaclasses.model.entity.tinytype.TokenId;
-import com.javaclasses.model.entity.tinytype.UserId;
+import com.javaclasses.chat.model.entity.tinytype.TokenId;
+import com.javaclasses.chat.model.entity.tinytype.UserId;
 
 /**
  * Security token entity implementation

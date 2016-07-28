@@ -1,17 +1,19 @@
-package com.javaclasses.model.repository.impl;
+package com.javaclasses.chat.model.repository.impl;
 
-import com.javaclasses.model.entity.Token;
-import com.javaclasses.model.entity.tinytype.TokenId;
-import com.javaclasses.model.repository.InMemoryRepository;
+import com.javaclasses.chat.model.entity.Token;
+import com.javaclasses.chat.model.entity.tinytype.TokenId;
+import com.javaclasses.chat.model.repository.InMemoryRepository;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * {@link InMemoryRepository} implementation for authenticated users
  */
 public class TokenRepository extends InMemoryRepository<TokenId, Token> {
 
-    private static final Object ID_LOCK = new Object();
-
     private static TokenRepository tokenRepository;
+
+    private AtomicLong idCounter = new AtomicLong(1);
 
     private TokenRepository() {
     }
@@ -26,8 +28,6 @@ public class TokenRepository extends InMemoryRepository<TokenId, Token> {
 
     @Override
     protected TokenId generateId() {
-        synchronized (ID_LOCK) {
-            return new TokenId(System.nanoTime());
-        }
+        return new TokenId(idCounter.getAndIncrement());
     }
 }

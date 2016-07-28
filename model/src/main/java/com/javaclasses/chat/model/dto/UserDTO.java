@@ -1,6 +1,6 @@
-package com.javaclasses.model.dto;
+package com.javaclasses.chat.model.dto;
 
-import com.javaclasses.model.entity.tinytype.UserId;
+import com.javaclasses.chat.model.entity.tinytype.UserId;
 
 /**
  * Data transfer object for user entity

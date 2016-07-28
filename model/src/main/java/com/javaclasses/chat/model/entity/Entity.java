@@ -1,6 +1,6 @@
-package com.javaclasses.model.entity;
+package com.javaclasses.chat.model.entity;
 
-import com.javaclasses.model.entity.tinytype.EntityId;
+import com.javaclasses.chat.model.entity.tinytype.EntityId;
 
 /**
  * Abstract entity interface

@@ -1,4 +1,4 @@
-package com.javaclasses.model.service;
+package com.javaclasses.chat.model.service;
 
 /**
  * Custom exception for catching user authentication failures

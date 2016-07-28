@@ -1,20 +1,20 @@
-package com.javaclasses.model.service.impl;
+package com.javaclasses.chat.model.service.impl;
 
-import com.javaclasses.model.dto.LoginDTO;
-import com.javaclasses.model.dto.RegistrationDTO;
-import com.javaclasses.model.dto.TokenDTO;
-import com.javaclasses.model.dto.UserDTO;
-import com.javaclasses.model.entity.User;
-import com.javaclasses.model.entity.tinytype.Password;
-import com.javaclasses.model.entity.Token;
-import com.javaclasses.model.entity.tinytype.TokenId;
-import com.javaclasses.model.entity.tinytype.UserId;
-import com.javaclasses.model.entity.tinytype.UserName;
-import com.javaclasses.model.repository.impl.TokenRepository;
-import com.javaclasses.model.repository.impl.UserRepository;
-import com.javaclasses.model.service.UserAuthenticationException;
-import com.javaclasses.model.service.UserRegistrationException;
-import com.javaclasses.model.service.UserService;
+import com.javaclasses.chat.model.dto.LoginDTO;
+import com.javaclasses.chat.model.dto.RegistrationDTO;
+import com.javaclasses.chat.model.dto.TokenDTO;
+import com.javaclasses.chat.model.dto.UserDTO;
+import com.javaclasses.chat.model.entity.Token;
+import com.javaclasses.chat.model.entity.User;
+import com.javaclasses.chat.model.entity.tinytype.Password;
+import com.javaclasses.chat.model.entity.tinytype.TokenId;
+import com.javaclasses.chat.model.entity.tinytype.UserId;
+import com.javaclasses.chat.model.entity.tinytype.UserName;
+import com.javaclasses.chat.model.repository.impl.TokenRepository;
+import com.javaclasses.chat.model.repository.impl.UserRepository;
+import com.javaclasses.chat.model.service.UserAuthenticationException;
+import com.javaclasses.chat.model.service.UserRegistrationException;
+import com.javaclasses.chat.model.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.javaclasses.chat.model.service.ErrorMessage.*;
 
 /**
  * Implementation of {@link UserService} interface
@@ -67,34 +68,34 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByNickname(userName) != null) {
 
             if (log.isWarnEnabled()) {
-                log.warn("User with given username already exists.");
+                log.warn(USER_ALREADY_EXISTS.toString());
             }
 
-            throw new UserRegistrationException("User with given username already exists.");
+            throw new UserRegistrationException(USER_ALREADY_EXISTS.toString());
         }
         if (userName.contains(" ")) {
 
             if (log.isWarnEnabled()) {
-                log.warn("Nickname cannot contain gaps.");
+                log.warn(NICKNAME_CANNOT_CONTAIN_GAPS.toString());
             }
 
-            throw new UserRegistrationException("Nickname cannot contain gaps.");
+            throw new UserRegistrationException(NICKNAME_CANNOT_CONTAIN_GAPS.toString());
         }
         if (userName.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
 
             if (log.isWarnEnabled()) {
-                log.warn("All fields must be filled.");
+                log.warn(ALL_FIELDS_MUST_BE_FILLED.toString());
             }
 
-            throw new UserRegistrationException("All fields must be filled.");
+            throw new UserRegistrationException(ALL_FIELDS_MUST_BE_FILLED.toString());
         }
         if (!password.equals(confirmPassword)){
 
             if (log.isWarnEnabled()) {
-                log.warn("Passwords does not match.");
+                log.warn(PASSWORDS_DOES_NOT_MATCH.toString());
             }
 
-            throw new UserRegistrationException("Passwords does not match.");
+            throw new UserRegistrationException(PASSWORDS_DOES_NOT_MATCH.toString());
         }
 
         final User user = new User(new UserName(userName), new Password(password));
@@ -129,18 +130,18 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
 
             if (log.isWarnEnabled()) {
-                log.warn("Incorrect login/password.");
+                log.warn(INCORRECT_CREDENTIALS.toString());
             }
 
-            throw new UserAuthenticationException("Incorrect login/password.");
+            throw new UserAuthenticationException(INCORRECT_CREDENTIALS.toString());
         }
         if (!user.getPassword().getPassword().equals(password)) {
 
             if (log.isWarnEnabled()) {
-                log.warn("Incorrect login/password.");
+                log.warn(INCORRECT_CREDENTIALS.toString());
             }
 
-            throw new UserAuthenticationException("Incorrect login/password.");
+            throw new UserAuthenticationException(INCORRECT_CREDENTIALS.toString());
         }
 
         final Token token = new Token(user.getId());
