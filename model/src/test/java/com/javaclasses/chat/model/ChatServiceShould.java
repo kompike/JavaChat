@@ -155,12 +155,12 @@ public class ChatServiceShould {
         final UserId userId = userService.register(new RegistrationDTO(nickname, password, password));
 
         final ChatId chatId = chatService.createChat(userId, new ChatName(chatName));
-        final ChatDTO chatDTO = chatService.joinChat(userId, chatId);
+        chatService.joinChat(userId, chatId);
 
         assertEquals("User did not join the chat.",
                 1, chatService.getChatUsers(chatId).size());
 
-        final ChatDTO chatWithoutUsers = chatService.leaveChat(userId, chatId);
+        chatService.leaveChat(userId, chatId);
 
         assertEquals("User did not leave the chat.",
                 0, chatService.getChatUsers(chatId).size());
@@ -181,12 +181,12 @@ public class ChatServiceShould {
         final UserId userId = userService.register(new RegistrationDTO(nickname, password, password));
 
         final ChatId chatId = chatService.createChat(userId, new ChatName(chatName));
-        final ChatDTO chatDTO = chatService.joinChat(userId, chatId);
+        chatService.joinChat(userId, chatId);
 
         assertEquals("User did not join the chat.",
                 1, chatService.getChatUsers(chatId).size());
 
-        final ChatDTO chatWithoutUsers = chatService.leaveChat(userId, chatId);
+        chatService.leaveChat(userId, chatId);
 
         assertEquals("User did not leave the chat.",
                 0, chatService.getChatUsers(chatId).size());
@@ -197,6 +197,79 @@ public class ChatServiceShould {
         } catch (ChatLeavingException ex) {
             assertEquals("Wrong message for leaving chat which user already left.",
                     USER_ALREADY_LEFT.toString(), ex.getMessage());
+
+            chatService.delete(chatId);
+            userService.delete(userId);
+        }
+    }
+
+    @Test
+    public void allowUserToPostNewMessage()
+            throws UserRegistrationException, ChatCreationException,
+            ChatJoiningException, MessageCreationException {
+
+        final String chatName = "NewChat";
+        final String nickname = "User";
+        final String password = "password";
+
+        final UserId userId = userService.register(new RegistrationDTO(nickname, password, password));
+
+        final ChatId chatId = chatService.createChat(userId, new ChatName(chatName));
+        chatService.joinChat(userId, chatId);
+
+        assertEquals("User did not join the chat.",
+                1, chatService.getChatUsers(chatId).size());
+
+        chatService.addMessage(chatId, userId, "New message!!!");
+
+        assertEquals("Message was not added.",
+                1, chatService.getChatMessages(chatId).size());
+
+        chatService.delete(chatId);
+        userService.delete(userId);
+    }
+
+    @Test
+    public void prohibitUserToAddMessageWithoutJoiningChat()
+            throws ChatJoiningException, ChatCreationException, UserRegistrationException {
+
+        final String chatName = "NewChat";
+        final String nickname = "User";
+        final String password = "password";
+
+        final UserId userId = userService.register(new RegistrationDTO(nickname, password, password));
+        final ChatId chatId = chatService.createChat(userId, new ChatName(chatName));
+
+        try {
+            chatService.addMessage(chatId, userId, "New message!!!");
+            fail("Message was added to chat.");
+        } catch (MessageCreationException ex) {
+            assertEquals("Wrong message for adding message without joining chat.",
+                    USER_IS_NOT_IN_CHAT.toString(), ex.getMessage());
+
+            chatService.delete(chatId);
+            userService.delete(userId);
+        }
+    }
+
+    @Test
+    public void prohibitUserToPostEmptyMessage()
+            throws ChatJoiningException, ChatCreationException, UserRegistrationException {
+
+        final String chatName = "NewChat";
+        final String nickname = "User";
+        final String password = "password";
+
+        final UserId userId = userService.register(new RegistrationDTO(nickname, password, password));
+        final ChatId chatId = chatService.createChat(userId, new ChatName(chatName));
+        chatService.joinChat(userId, chatId);
+
+        try {
+            chatService.addMessage(chatId, userId, "");
+            fail("Message was added to chat.");
+        } catch (MessageCreationException ex) {
+            assertEquals("Wrong message for adding message without joining chat.",
+                    NOT_ALLOWED_TO_POST_EMPTY_MESSAGE.toString(), ex.getMessage());
 
             chatService.delete(chatId);
             userService.delete(userId);
