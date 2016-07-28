@@ -1,9 +1,11 @@
 package com.javaclasses.chat.webapp.command.impl;
 
 import com.javaclasses.chat.model.dto.ChatDTO;
+import com.javaclasses.chat.model.dto.MessageDTO;
 import com.javaclasses.chat.model.dto.UserDTO;
-import com.javaclasses.chat.model.entity.tinytype.ChatName;
+import com.javaclasses.chat.model.entity.tinytype.ChatId;
 import com.javaclasses.chat.model.entity.tinytype.TokenId;
+import com.javaclasses.chat.model.service.ChatJoiningException;
 import com.javaclasses.chat.model.service.ChatService;
 import com.javaclasses.chat.model.service.UserService;
 import com.javaclasses.chat.model.service.impl.ChatServiceImpl;
@@ -17,11 +19,11 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 
 /**
- * Implementation of {@link Handler} interface for chat creation process
+ * Implementation of {@link Handler} interface for joining chat process
  */
-public class ChatCreationController implements Handler {
+public class JoiningChatController implements Handler {
 
-    private final Logger log = LoggerFactory.getLogger(ChatCreationController.class);
+    private final Logger log = LoggerFactory.getLogger(JoiningChatController.class);
 
     private final UserService userService = UserServiceImpl.getInstance();
     private final ChatService chatService = ChatServiceImpl.getInstance();
@@ -33,23 +35,29 @@ public class ChatCreationController implements Handler {
             log.info("Start processing user request...");
         }
 
-        final String chatName = request.getParameter("chatName");
-        final String tokenId = request.getParameter("tokenId");
+        final String requestChatId = request.getParameter("chatId");
+        final String requestTokenId = request.getParameter("tokenId");
 
-        final TokenId id = new TokenId(Long.valueOf(tokenId));
-        final UserDTO user = userService.findByToken(id);
+        final ChatId chatId = new ChatId(Long.valueOf(requestChatId));
+        final TokenId tokenId = new TokenId(Long.valueOf(requestTokenId));
+        final UserDTO user = userService.findByToken(tokenId);
+        final ChatDTO chatDTO = chatService.findById(chatId);
 
         final JsonObject jsonObject = new JsonObject();
+
         try {
-            chatService.createChat(user.getUserId(), new ChatName(chatName));
+            chatService.joinChat(user.getUserId(), chatId);
+            jsonObject.add("chatId", String.valueOf(chatDTO.getChatId().getId()));
+            jsonObject.add("chatName", chatDTO.getChatName());
 
             final StringBuilder builder = new StringBuilder("[");
 
-            final Collection<ChatDTO> chatList = chatService.findAll();
-            for (ChatDTO chatDTO : chatList) {
+            final Collection<MessageDTO> messages = chatService.getChatMessages(chatId);
+            for (MessageDTO messageDTO : messages) {
                 final JsonObject chatJson = new JsonObject();
-                chatJson.add("chatId", String.valueOf(chatDTO.getChatId().getId()));
-                chatJson.add("chatName", chatDTO.getChatName());
+                chatJson.add("message", String.valueOf(chatDTO.getChatId().getId()));
+                final String author = userService.findById(messageDTO.getAuthor()).getUserName();
+                chatJson.add("author", author);
                 builder.append(chatJson.generateJson()).append(",");
             }
 
@@ -58,16 +66,15 @@ public class ChatCreationController implements Handler {
             }
             builder.append("]");
 
-            jsonObject.add("chatList", builder.toString());
+            jsonObject.add("messageList", builder.toString());
             jsonObject.setResponseStatusCode(200);
-
-        } catch (Exception e) {
+        } catch (ChatJoiningException e) {
             jsonObject.add("errorMessage", e.getMessage());
             jsonObject.setResponseStatusCode(500);
         }
 
         try {
-            return jsonObject;
+            return null;
         } finally {
             if (log.isInfoEnabled()) {
                 log.info("User request successfully processed.");
