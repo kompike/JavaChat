@@ -2,9 +2,8 @@ package com.javaclasses.chat.model.dto;
 
 import com.javaclasses.chat.model.entity.tinytype.ChatId;
 import com.javaclasses.chat.model.entity.tinytype.UserId;
-import com.javaclasses.chat.model.entity.tinytype.UserName;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * Data transfer object for chat entity
@@ -14,13 +13,13 @@ public class ChatDTO {
     private ChatId chatId;
     private UserId owner;
     private String chatName;
-    private Set<String> userNameList;
+    private List<MessageDTO> messages;
 
-    public ChatDTO(ChatId chatId, UserId owner, String chatName, Set<String> userNameList) {
+    public ChatDTO(ChatId chatId, UserId owner, String chatName, List<MessageDTO> messages) {
         this.chatId = chatId;
         this.owner = owner;
         this.chatName = chatName;
-        this.userNameList = userNameList;
+        this.messages = messages;
     }
 
     public ChatId getChatId() {
@@ -35,8 +34,8 @@ public class ChatDTO {
         return chatName;
     }
 
-    public Set<String> getUserNameList() {
-        return userNameList;
+    public List<MessageDTO> getMessages() {
+        return messages;
     }
 
     @Override
@@ -48,7 +47,8 @@ public class ChatDTO {
 
         if (!chatId.equals(chatDTO.chatId)) return false;
         if (!owner.equals(chatDTO.owner)) return false;
-        return chatName.equals(chatDTO.chatName);
+        if (!chatName.equals(chatDTO.chatName)) return false;
+        return messages.equals(chatDTO.messages);
 
     }
 

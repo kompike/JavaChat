@@ -98,6 +98,26 @@ public class ChatServiceShould {
 
     @Test
     public void allowUserToJoinChat()
+            throws UserRegistrationException, ChatCreationException, ChatJoiningException {
+
+        final String chatName = "NewChat";
+        final String nickname = "User";
+        final String password = "password";
+
+        final UserId userId = userService.register(new RegistrationDTO(nickname, password, password));
+
+        final ChatId chatId = chatService.createChat(userId, new ChatName(chatName));
+        chatService.joinChat(userId, chatId);
+
+        assertEquals("User did not join the chat.",
+                1, chatService.getChatUsers(chatId).size());
+
+        chatService.delete(chatId);
+        userService.delete(userId);
+    }
+
+    @Test
+    public void prohibitUserToJoinChatHeAlreadyJoined()
             throws ChatJoiningException, ChatCreationException, UserRegistrationException {
 
         final String chatName = "NewChat";
@@ -107,10 +127,10 @@ public class ChatServiceShould {
         final UserId userId = userService.register(new RegistrationDTO(nickname, password, password));
 
         final ChatId chatId = chatService.createChat(userId, new ChatName(chatName));
-        final ChatDTO chatDTO = chatService.joinChat(userId, chatId);
+        chatService.joinChat(userId, chatId);
 
         assertEquals("User did not join the chat.",
-                1, chatDTO.getUserNameList().size());
+                1, chatService.getChatUsers(chatId).size());
 
         try {
             chatService.joinChat(userId, chatId);
@@ -122,28 +142,6 @@ public class ChatServiceShould {
             chatService.delete(chatId);
             userService.delete(userId);
         }
-
-    }
-
-    @Test
-    public void prohibitUserToJoinChatHeAlreadyJoined()
-            throws UserRegistrationException, ChatCreationException, ChatJoiningException {
-
-        final String chatName = "NewChat";
-        final String nickname = "User";
-        final String password = "password";
-
-        final UserId userId = userService.register(new RegistrationDTO(nickname, password, password));
-
-        final ChatId chatId = chatService.createChat(userId, new ChatName(chatName));
-        final ChatDTO chatDTO = chatService.joinChat(userId, chatId);
-
-        assertEquals("User did not join the chat.",
-                1, chatDTO.getUserNameList().size());
-
-        chatService.delete(chatId);
-        userService.delete(userId);
-
     }
 
     @Test
@@ -160,12 +158,12 @@ public class ChatServiceShould {
         final ChatDTO chatDTO = chatService.joinChat(userId, chatId);
 
         assertEquals("User did not join the chat.",
-                1, chatDTO.getUserNameList().size());
+                1, chatService.getChatUsers(chatId).size());
 
         final ChatDTO chatWithoutUsers = chatService.leaveChat(userId, chatId);
 
         assertEquals("User did not leave the chat.",
-                0, chatWithoutUsers.getUserNameList().size());
+                0, chatService.getChatUsers(chatId).size());
 
         chatService.delete(chatId);
         userService.delete(userId);
@@ -186,12 +184,12 @@ public class ChatServiceShould {
         final ChatDTO chatDTO = chatService.joinChat(userId, chatId);
 
         assertEquals("User did not join the chat.",
-                1, chatDTO.getUserNameList().size());
+                1, chatService.getChatUsers(chatId).size());
 
         final ChatDTO chatWithoutUsers = chatService.leaveChat(userId, chatId);
 
         assertEquals("User did not leave the chat.",
-                0, chatWithoutUsers.getUserNameList().size());
+                0, chatService.getChatUsers(chatId).size());
 
         try {
             chatService.leaveChat(userId, chatId);

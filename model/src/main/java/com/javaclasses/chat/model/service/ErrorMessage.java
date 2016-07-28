@@ -15,7 +15,10 @@ public enum ErrorMessage {
     CHAT_NAME_CANNOT_BE_EMPTY("Chat name cannot be empty."),
 
     USER_ALREADY_JOINED("You already joined this chat."),
-    USER_ALREADY_LEFT("You already left this chat.");
+    USER_ALREADY_LEFT("You already left this chat."),
+
+    USER_IS_NOT_IN_CHAT("You must join the chat to post messages."),
+    NOT_ALLOWED_TO_POST_EMPTY_MESSAGE("You cannot post empty message.");
 
 
     private final String message;

@@ -1,0 +1,44 @@
+package com.javaclasses.chat.model.entity;
+
+import com.javaclasses.chat.model.entity.tinytype.UserId;
+
+/**
+ * Entity of chat message instance
+ */
+public class Message {
+
+    private String message;
+    private UserId author;
+
+    public Message(String message, UserId author) {
+        this.message = message;
+        this.author = author;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public UserId getAuthor() {
+        return author;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Message message1 = (Message) o;
+
+        if (!message.equals(message1.message)) return false;
+        return author.equals(message1.author);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = message.hashCode();
+        result = 31 * result + author.hashCode();
+        return result;
+    }
+}

@@ -1,6 +1,9 @@
 package com.javaclasses.chat.model.service;
 
 import com.javaclasses.chat.model.dto.ChatDTO;
+import com.javaclasses.chat.model.dto.MessageDTO;
+import com.javaclasses.chat.model.dto.UserDTO;
+import com.javaclasses.chat.model.entity.Message;
 import com.javaclasses.chat.model.entity.tinytype.ChatId;
 import com.javaclasses.chat.model.entity.tinytype.ChatName;
 import com.javaclasses.chat.model.entity.tinytype.UserId;
@@ -18,13 +21,21 @@ public interface ChatService {
     ChatDTO joinChat(UserId userId, ChatId chatId)
             throws ChatJoiningException;
 
-    ChatDTO leaveChat(UserId userId, ChatId chatId) throws ChatLeavingException;
+    ChatDTO leaveChat(UserId userId, ChatId chatId)
+            throws ChatLeavingException;
 
     Collection<ChatDTO> findAll();
 
     ChatDTO findByName(ChatName chatName);
 
     ChatDTO findById(ChatId chatId);
+
+    Collection<UserDTO> getChatUsers(ChatId chatId);
+
+    MessageDTO addMessage(ChatId chatId, UserId userId, String message)
+            throws MessageCreationException;
+
+    Collection<MessageDTO> getChatMessages(ChatId chatId);
 
     void delete(ChatId chatId);
 }

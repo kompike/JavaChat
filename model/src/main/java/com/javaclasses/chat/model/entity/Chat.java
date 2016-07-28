@@ -3,8 +3,10 @@ package com.javaclasses.chat.model.entity;
 import com.javaclasses.chat.model.entity.tinytype.ChatId;
 import com.javaclasses.chat.model.entity.tinytype.ChatName;
 import com.javaclasses.chat.model.entity.tinytype.UserId;
-import com.javaclasses.chat.model.entity.tinytype.UserName;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -15,7 +17,8 @@ public class Chat implements Entity<ChatId> {
     private ChatId chatId;
     private ChatName chatName;
     private UserId owner;
-    private Set<UserName> users;
+    private Set<UserId> users;
+    private List<Message> messages;
 
     @Override
     public ChatId getId() {
@@ -27,51 +30,38 @@ public class Chat implements Entity<ChatId> {
         this.chatId = id;
     }
 
-    public Chat(ChatName chatName, UserId owner, Set<UserName> users) {
+    public Chat(ChatName chatName, UserId owner) {
         this.chatName = chatName;
         this.owner = owner;
-        this.users = users;
+        this.users = new HashSet<>();
+        this.messages = new ArrayList<>();
     }
 
     public ChatName getChatName() {
         return chatName;
     }
 
-    public void setChatName(ChatName chatName) {
-        this.chatName = chatName;
-    }
-
     public UserId getOwner() {
         return owner;
     }
 
-    public void setOwner(UserId owner) {
-        this.owner = owner;
-    }
-
-    public Set<UserName> getUsers() {
+    public Set<UserId> getUsers() {
         return users;
     }
 
-    public void setUsers(Set<UserName> users) {
-        this.users = users;
+    public List<Message> getMessages() {
+        return messages;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Chat chat = (Chat) o;
-
-        if (!chatId.equals(chat.chatId)) return false;
-        if (!chatName.equals(chat.chatName)) return false;
-        return owner.equals(chat.owner);
-
+    public boolean addUser(UserId userId) {
+        return users.add(userId);
     }
 
-    @Override
-    public int hashCode() {
-        return chatId.hashCode();
+    public boolean removeUser(UserId userId) {
+        return users.remove(userId);
+    }
+
+    public void addMessage(Message message) {
+        messages.add(message);
     }
 }
