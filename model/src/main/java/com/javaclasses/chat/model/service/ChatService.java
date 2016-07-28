@@ -18,7 +18,7 @@ public interface ChatService {
     ChatDTO joinChat(UserId userId, ChatId chatId)
             throws ChatJoiningException;
 
-    ChatId leaveChat(UserId userId, ChatId chatId) throws ChatLeavingException;
+    ChatDTO leaveChat(UserId userId, ChatId chatId) throws ChatLeavingException;
 
     Collection<ChatDTO> findAll();
 

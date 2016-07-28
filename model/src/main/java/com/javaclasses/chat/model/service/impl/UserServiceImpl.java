@@ -245,7 +245,6 @@ public class UserServiceImpl implements UserService {
             if (log.isInfoEnabled()) {
                 log.info("Found " + userDTOList.size() + " users.");
             }
-
         }
     }
 
