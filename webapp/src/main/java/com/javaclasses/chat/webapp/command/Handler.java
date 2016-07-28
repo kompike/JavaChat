@@ -1,6 +1,6 @@
-package com.javaclasses.webapp.command;
+package com.javaclasses.chat.webapp.command;
 
-import com.javaclasses.webapp.JsonObject;
+import com.javaclasses.chat.webapp.JsonObject;
 
 import javax.servlet.http.HttpServletRequest;
 

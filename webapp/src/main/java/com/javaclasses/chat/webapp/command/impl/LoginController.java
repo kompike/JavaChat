@@ -1,12 +1,12 @@
-package com.javaclasses.webapp.command.impl;
+package com.javaclasses.chat.webapp.command.impl;
 
-import com.javaclasses.model.dto.LoginDTO;
-import com.javaclasses.model.dto.TokenDTO;
-import com.javaclasses.model.service.UserAuthenticationException;
-import com.javaclasses.model.service.UserService;
-import com.javaclasses.model.service.impl.UserServiceImpl;
-import com.javaclasses.webapp.JsonObject;
-import com.javaclasses.webapp.command.Handler;
+import com.javaclasses.chat.model.dto.LoginDTO;
+import com.javaclasses.chat.model.dto.TokenDTO;
+import com.javaclasses.chat.model.service.UserAuthenticationException;
+import com.javaclasses.chat.model.service.UserService;
+import com.javaclasses.chat.model.service.impl.UserServiceImpl;
+import com.javaclasses.chat.webapp.JsonObject;
+import com.javaclasses.chat.webapp.command.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,10 +40,10 @@ public class LoginController implements Handler {
             jsonObject.add("tokenId", String.valueOf(tokenDTO.getTokenId().getId()));
             jsonObject.add("userName", nickname);
             jsonObject.add("message", "User successfully logged in");
-            jsonObject.add("responseStatus", "200");
+            jsonObject.setResponseStatusCode(200);
         } catch (UserAuthenticationException e) {
             jsonObject.add("errorMessage", e.getMessage());
-            jsonObject.add("responseStatus", "404");
+            jsonObject.setResponseStatusCode(500);
         }
 
         try {

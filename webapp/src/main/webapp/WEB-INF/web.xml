@@ -5,7 +5,7 @@
          version="3.1">
     <servlet>
         <servlet-name>DispatcherServlet</servlet-name>
-        <servlet-class>com.javaclasses.webapp.DispatcherServlet</servlet-class>
+        <servlet-class>com.javaclasses.chat.webapp.DispatcherServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>DispatcherServlet</servlet-name>

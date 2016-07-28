@@ -1,6 +1,7 @@
-package com.javaclasses.webapp;
+package com.javaclasses.chat.webapp;
 
-import com.javaclasses.webapp.command.Handler;
+import com.javaclasses.chat.webapp.command.Handler;
+import com.javaclasses.chat.webapp.command.RequestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,13 +40,14 @@ public class DispatcherServlet extends HttpServlet {
 
         final String uri = request.getRequestURI();
         final String method = request.getMethod().toLowerCase();
+        final RequestContext requestContext = new RequestContext(uri, method);
 
-        final Handler handler = registry.getHandler(uri, method);
+        final Handler handler = registry.getHandler(requestContext);
         final JsonObject jsonObject = handler.process(request);
 
         final PrintWriter printWriter = response.getWriter();
         printWriter.write(jsonObject.generateJson());
-        response.setStatus(jsonObject.getResponseStatus());
+        response.setStatus(jsonObject.getResponseStatusCode());
 
         if (log.isInfoEnabled()) {
             log.info("Response successfully created.");

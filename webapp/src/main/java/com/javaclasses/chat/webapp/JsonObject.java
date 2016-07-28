@@ -1,4 +1,4 @@
-package com.javaclasses.webapp;
+package com.javaclasses.chat.webapp;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -9,20 +9,25 @@ import java.util.Map;
  */
 public class JsonObject {
 
+    private int responseStatusCode;
+
     private final Map<String, String> jsonObject = new LinkedHashMap<>();
 
     public void add(String key, String value) {
         jsonObject.put(key, value);
     }
 
-    public int getResponseStatus() {
-        final String responseStatus = jsonObject.get("responseStatus");
+    public int getResponseStatusCode() {
 
-        if (responseStatus == null) {
+        if (responseStatusCode == 0) {
             return 404;
         }
 
-        return Integer.valueOf(responseStatus);
+        return responseStatusCode;
+    }
+
+    public void setResponseStatusCode(int responseStatusCode) {
+        this.responseStatusCode = responseStatusCode;
     }
 
     /**

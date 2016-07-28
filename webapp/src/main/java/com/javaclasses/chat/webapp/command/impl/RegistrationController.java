@@ -1,11 +1,11 @@
-package com.javaclasses.webapp.command.impl;
+package com.javaclasses.chat.webapp.command.impl;
 
-import com.javaclasses.model.dto.RegistrationDTO;
-import com.javaclasses.model.service.UserRegistrationException;
-import com.javaclasses.model.service.UserService;
-import com.javaclasses.model.service.impl.UserServiceImpl;
-import com.javaclasses.webapp.JsonObject;
-import com.javaclasses.webapp.command.Handler;
+import com.javaclasses.chat.model.dto.RegistrationDTO;
+import com.javaclasses.chat.model.service.UserRegistrationException;
+import com.javaclasses.chat.model.service.UserService;
+import com.javaclasses.chat.model.service.impl.UserServiceImpl;
+import com.javaclasses.chat.webapp.JsonObject;
+import com.javaclasses.chat.webapp.command.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,10 +38,10 @@ public class RegistrationController implements Handler {
         try {
             userService.register(registrationDTO);
             jsonObject.add("message", "User successfully registered");
-            jsonObject.add("responseStatus", "200");
+            jsonObject.setResponseStatusCode(200);
         } catch (UserRegistrationException e) {
             jsonObject.add("errorMessage", e.getMessage());
-            jsonObject.add("responseStatus", "404");
+            jsonObject.setResponseStatusCode(500);
         }
 
         try {
