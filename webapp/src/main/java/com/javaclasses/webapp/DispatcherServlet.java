@@ -41,11 +41,11 @@ public class DispatcherServlet extends HttpServlet {
         final String method = request.getMethod().toLowerCase();
 
         final Handler handler = registry.getHandler(uri, method);
-        final JsonEntity jsonEntity = handler.process(request);
+        final JsonObject jsonObject = handler.process(request);
 
         final PrintWriter printWriter = response.getWriter();
-        printWriter.write(jsonEntity.generateJson());
-        response.setStatus(jsonEntity.getResponseStatus());
+        printWriter.write(jsonObject.generateJson());
+        response.setStatus(jsonObject.getResponseStatus());
 
         if (log.isInfoEnabled()) {
             log.info("Response successfully created.");

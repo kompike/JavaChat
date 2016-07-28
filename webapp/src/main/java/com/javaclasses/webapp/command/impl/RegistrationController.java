@@ -1,12 +1,10 @@
 package com.javaclasses.webapp.command.impl;
 
 import com.javaclasses.model.dto.RegistrationDTO;
-import com.javaclasses.model.dto.UserDTO;
-import com.javaclasses.model.entity.tinytype.UserId;
 import com.javaclasses.model.service.UserRegistrationException;
 import com.javaclasses.model.service.UserService;
 import com.javaclasses.model.service.impl.UserServiceImpl;
-import com.javaclasses.webapp.JsonEntity;
+import com.javaclasses.webapp.JsonObject;
 import com.javaclasses.webapp.command.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +21,7 @@ public class RegistrationController implements Handler {
     private final UserService userService = UserServiceImpl.getInstance();
 
     @Override
-    public JsonEntity process(HttpServletRequest request) {
+    public JsonObject process(HttpServletRequest request) {
 
         if (log.isInfoEnabled()) {
             log.info("Start processing user request...");
@@ -36,21 +34,18 @@ public class RegistrationController implements Handler {
         final RegistrationDTO registrationDTO =
                 new RegistrationDTO(nickname, password, confirmPassword);
 
-        final JsonEntity jsonEntity = new JsonEntity();
+        final JsonObject jsonObject = new JsonObject();
         try {
-            final UserId userId = userService.register(registrationDTO);
-            final UserDTO registeredUser = userService.findById(userId);
-            jsonEntity.add("userId", String.valueOf(registeredUser.getUserId().getId()));
-            jsonEntity.add("userName", registeredUser.getUserName());
-            jsonEntity.add("message", "User successfully registered");
-            jsonEntity.add("responseStatus", "200");
+            userService.register(registrationDTO);
+            jsonObject.add("message", "User successfully registered");
+            jsonObject.add("responseStatus", "200");
         } catch (UserRegistrationException e) {
-            jsonEntity.add("errorMessage", e.getMessage());
-            jsonEntity.add("responseStatus", "404");
+            jsonObject.add("errorMessage", e.getMessage());
+            jsonObject.add("responseStatus", "404");
         }
 
         try {
-            return jsonEntity;
+            return jsonObject;
         } finally {
             if (log.isInfoEnabled()) {
                 log.info("User request successfully processed.");

@@ -1,6 +1,6 @@
 package com.javaclasses.webapp.command;
 
-import com.javaclasses.webapp.JsonEntity;
+import com.javaclasses.webapp.JsonObject;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -12,7 +12,7 @@ public interface Handler {
     /**
      * Process request data
      * @param request HttpServletRequest from user
-     * @return Entity of {@link JsonEntity} with processed data
+     * @return Entity of {@link JsonObject} with processed data
      */
-    JsonEntity process(HttpServletRequest request);
+    JsonObject process(HttpServletRequest request);
 }

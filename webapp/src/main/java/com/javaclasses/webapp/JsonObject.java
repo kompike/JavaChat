@@ -7,7 +7,7 @@ import java.util.Map;
  * Entity for creation and generation of string
  * with necessary data in JSON format
  */
-public class JsonEntity {
+public class JsonObject {
 
     private final Map<String, String> jsonObject = new LinkedHashMap<>();
 

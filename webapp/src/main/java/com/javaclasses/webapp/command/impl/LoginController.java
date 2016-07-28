@@ -5,7 +5,7 @@ import com.javaclasses.model.dto.TokenDTO;
 import com.javaclasses.model.service.UserAuthenticationException;
 import com.javaclasses.model.service.UserService;
 import com.javaclasses.model.service.impl.UserServiceImpl;
-import com.javaclasses.webapp.JsonEntity;
+import com.javaclasses.webapp.JsonObject;
 import com.javaclasses.webapp.command.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,7 @@ public class LoginController implements Handler {
     private final UserService userService = UserServiceImpl.getInstance();
 
     @Override
-    public JsonEntity process(HttpServletRequest request) {
+    public JsonObject process(HttpServletRequest request) {
 
         if (log.isInfoEnabled()) {
             log.info("Start processing user request...");
@@ -34,20 +34,20 @@ public class LoginController implements Handler {
         final LoginDTO loginDTO =
                 new LoginDTO(nickname, password);
 
-        final JsonEntity jsonEntity = new JsonEntity();
+        final JsonObject jsonObject = new JsonObject();
         try {
             final TokenDTO tokenDTO = userService.login(loginDTO);
-            jsonEntity.add("tokenId", String.valueOf(tokenDTO.getTokenId().getId()));
-            jsonEntity.add("userName", nickname);
-            jsonEntity.add("message", "User successfully logged in");
-            jsonEntity.add("responseStatus", "200");
+            jsonObject.add("tokenId", String.valueOf(tokenDTO.getTokenId().getId()));
+            jsonObject.add("userName", nickname);
+            jsonObject.add("message", "User successfully logged in");
+            jsonObject.add("responseStatus", "200");
         } catch (UserAuthenticationException e) {
-            jsonEntity.add("errorMessage", e.getMessage());
-            jsonEntity.add("responseStatus", "404");
+            jsonObject.add("errorMessage", e.getMessage());
+            jsonObject.add("responseStatus", "404");
         }
 
         try {
-            return jsonEntity;
+            return jsonObject;
         } finally {
             if (log.isInfoEnabled()) {
                 log.info("User request successfully processed.");
