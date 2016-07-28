@@ -1,5 +1,6 @@
 package com.javaclasses.chat.webapp;
 
+import com.javaclasses.chat.model.service.UserRegistrationException;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -15,6 +16,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.javaclasses.chat.model.service.ErrorMessage.*;
 import static org.apache.http.HttpHeaders.USER_AGENT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -22,51 +24,125 @@ import static org.junit.Assert.assertTrue;
 public class DispatcherServletShould {
 
     private static final String URL = "http://localhost:8080/";
+    private static final String REGISTRATION_PAGE_URL = URL + "register";
+    private static final String LOGIN_PAGE_URL = URL + "login";
 
     @Test
     public void allowNewUserToRegister() throws IOException {
 
-        final String registrationPageUrl = URL + "register";
-
         final String nickname = "User";
         final String password = "password";
 
-        final List<NameValuePair> urlParameters = new ArrayList<>();
-        urlParameters.add(new BasicNameValuePair("nickname", nickname));
-        urlParameters.add(new BasicNameValuePair("password", password));
-        urlParameters.add(new BasicNameValuePair("confirmPassword", password));
+        final List<NameValuePair> urlParameters = getRegistrationUrlParameters(nickname, password, password);
 
-        final HttpResponse response = generateResponse(registrationPageUrl, urlParameters);
+        final HttpResponse response = generateResponse(REGISTRATION_PAGE_URL, urlParameters);
 
         final String responseContent = getResponseContent(response);
-        System.out.println(responseContent);
 
         assertEquals("Response content does not equal expected JSON.",
                 "{'message':'User successfully registered'}", responseContent);
     }
 
     @Test
-    public void allowExistingUserToLogin() throws IOException {
+    public void prohibitRegistrationOfAlreadyExistingUser() throws IOException {
 
-        final String registrationPageUrl = URL + "register";
+        final String nickname = "ExistingUser";
+        final String password = "ExistingPassword";
 
-        final String nickname = "NewUser";
+        final List<NameValuePair> urlParameters = getRegistrationUrlParameters(nickname, password, password);
+
+        generateResponse(REGISTRATION_PAGE_URL, urlParameters);
+        final HttpResponse response = generateResponse(REGISTRATION_PAGE_URL, urlParameters);
+
+        final String responseContent = getResponseContent(response);
+
+        assertEquals("Already existing user was registered.",
+                "{'errorMessage':'" + USER_ALREADY_EXISTS + "'}", responseContent);
+    }
+
+    @Test
+    public void checkForGapsInNickname() throws IOException {
+
+        final String nickname = "New User";
+        final String password = "passWithoutGaps";
+
+        final List<NameValuePair> urlParameters = getRegistrationUrlParameters(nickname, password, password);
+
+        final HttpResponse response = generateResponse(REGISTRATION_PAGE_URL, urlParameters);
+
+        final String responseContent = getResponseContent(response);
+
+        assertEquals("User with gaps in nickname was registered.",
+                "{'errorMessage':'" + NICKNAME_CANNOT_CONTAIN_GAPS + "'}", responseContent);
+    }
+
+    @Test
+    public void checkPasswordEquality() throws IOException {
+
+        final String nickname = "UserWithDifferentPasswords";
+        final String password = "firstPassword";
+        final String confirmPassword = "secondPassword";
+
+        final List<NameValuePair> urlParameters = getRegistrationUrlParameters(nickname, password, confirmPassword);
+
+        final HttpResponse response = generateResponse(REGISTRATION_PAGE_URL, urlParameters);
+
+        final String responseContent = getResponseContent(response);
+
+        assertEquals("User with different passwords was registered.",
+                "{'errorMessage':'" + PASSWORDS_DOES_NOT_MATCH + "'}", responseContent);
+    }
+
+    @Test
+    public void checkForEmptyFieldsWhileRegisteringNewUser() throws IOException {
+
+        final String nickname = "";
+        final String password = "pass";
+
+        final List<NameValuePair> urlParameters = getRegistrationUrlParameters(nickname, password, password);
+
+        final HttpResponse response = generateResponse(REGISTRATION_PAGE_URL, urlParameters);
+
+        final String responseContent = getResponseContent(response);
+
+        assertEquals("User with empty nickname was registered.",
+                "{'errorMessage':'" + ALL_FIELDS_MUST_BE_FILLED + "'}", responseContent);
+    }
+
+    @Test
+    public void trimNicknameWhileRegisteringNewUser() throws UserRegistrationException, IOException {
+
+        final String nickname = "UserWithWhitespaces";
         final String password = "password";
 
-        final List<NameValuePair> registrationUrlParameters = new ArrayList<>();
-        registrationUrlParameters.add(new BasicNameValuePair("nickname", nickname));
-        registrationUrlParameters.add(new BasicNameValuePair("password", password));
-        registrationUrlParameters.add(new BasicNameValuePair("confirmPassword", password));
+        final List<NameValuePair> urlParameters = getRegistrationUrlParameters(nickname, password, password);
 
-        generateResponse(registrationPageUrl, registrationUrlParameters);
+        generateResponse(REGISTRATION_PAGE_URL, urlParameters);
 
-        final String loginPageUrl = URL + "login";
+        final List<NameValuePair> urlParametersWithNewNickname =
+                getRegistrationUrlParameters("   UserWithWhitespaces  ", password, password);
 
-        final List<NameValuePair> loginUrlParameters = new ArrayList<>();
-        loginUrlParameters.add(new BasicNameValuePair("nickname", nickname));
-        loginUrlParameters.add(new BasicNameValuePair("password", password));
+        final HttpResponse response = generateResponse(REGISTRATION_PAGE_URL, urlParametersWithNewNickname);
 
-        final HttpResponse response = generateResponse(loginPageUrl, loginUrlParameters);
+        final String responseContent = getResponseContent(response);
+
+        assertEquals("Already existing user was registered.",
+                "{'errorMessage':'" + USER_ALREADY_EXISTS + "'}", responseContent);
+    }
+
+    @Test
+    public void allowExistingUserToLogin() throws IOException {
+
+        final String nickname = "NewUser";
+        final String password = "NewPassword";
+
+        final List<NameValuePair> registrationUrlParameters = getRegistrationUrlParameters(nickname, password, password);
+
+        generateResponse(REGISTRATION_PAGE_URL, registrationUrlParameters);
+
+        final List<NameValuePair> loginUrlParameters = getLoginUrlParameters(nickname, password);
+
+        final HttpResponse response = generateResponse(LOGIN_PAGE_URL, loginUrlParameters);
 
         final String responseContent = getResponseContent(response);
 
@@ -76,6 +152,42 @@ public class DispatcherServletShould {
                 responseContent.contains(nickname));
         assertTrue("Result must contain message field.",
                 responseContent.contains("User successfully logged in"));
+    }
+
+    @Test
+    public void prohibitLoginOfNotRegisteredUser() throws IOException {
+
+        final String nickname = "Frank";
+        final String password = "FrankPass";
+
+        final List<NameValuePair> loginUrlParameters = getLoginUrlParameters(nickname, password);
+
+        final HttpResponse response = generateResponse(LOGIN_PAGE_URL, loginUrlParameters);
+
+        final String responseContent = getResponseContent(response);
+
+        assertEquals("Not registered user logged in.",
+                "{'errorMessage':'" + INCORRECT_CREDENTIALS + "'}", responseContent);
+    }
+
+    @Test
+    public void checkPasswordCorrectnessDuringLogin() throws IOException {
+
+        final String nickname = "Misha";
+        final String password = "MishaPass";
+
+        final List<NameValuePair> registrationUrlParameters = getRegistrationUrlParameters(nickname, password, password);
+
+        generateResponse(REGISTRATION_PAGE_URL, registrationUrlParameters);
+
+        final List<NameValuePair> loginUrlParameters = getLoginUrlParameters(nickname, "pass");
+
+        final HttpResponse response = generateResponse(LOGIN_PAGE_URL, loginUrlParameters);
+
+        final String responseContent = getResponseContent(response);
+
+        assertEquals("User with incorrect password logged in.",
+                "{'errorMessage':'" + INCORRECT_CREDENTIALS + "'}", responseContent);
     }
 
     private HttpResponse generateResponse(String url, List<NameValuePair> urlParameters)
@@ -101,5 +213,24 @@ public class DispatcherServletShould {
         }
 
         return result.toString();
+    }
+
+    private List<NameValuePair> getRegistrationUrlParameters(String nickname, String password, String confirmPassword) {
+
+        final List<NameValuePair> registrationUrlParameters = new ArrayList<>();
+        registrationUrlParameters.add(new BasicNameValuePair("nickname", nickname));
+        registrationUrlParameters.add(new BasicNameValuePair("password", password));
+        registrationUrlParameters.add(new BasicNameValuePair("confirmPassword", confirmPassword));
+
+        return registrationUrlParameters;
+    }
+
+    private List<NameValuePair> getLoginUrlParameters(String nickname, String password) {
+
+        final List<NameValuePair> loginUrlParameters = new ArrayList<>();
+        loginUrlParameters.add(new BasicNameValuePair("nickname", nickname));
+        loginUrlParameters.add(new BasicNameValuePair("password", password));
+
+        return loginUrlParameters;
     }
 }
