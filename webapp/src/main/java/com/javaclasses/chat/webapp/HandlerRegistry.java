@@ -36,6 +36,7 @@ public class HandlerRegistry  {
         put(new RequestContext("/create-chat", "post"), new ChatCreationController());
         put(new RequestContext("/join-chat", "post"), new JoiningChatController());
         put(new RequestContext("/leave-chat", "post"), new LeavingChatController());
+        put(new RequestContext("/add-message", "post"), new AddMessageController());
     }};
 
     /**
