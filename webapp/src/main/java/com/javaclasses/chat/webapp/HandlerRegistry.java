@@ -2,6 +2,7 @@ package com.javaclasses.chat.webapp;
 
 import com.javaclasses.chat.webapp.command.Handler;
 import com.javaclasses.chat.webapp.command.RequestContext;
+import com.javaclasses.chat.webapp.command.impl.ChatCreationController;
 import com.javaclasses.chat.webapp.command.impl.PageNotFoundController;
 import com.javaclasses.chat.webapp.command.impl.RegistrationController;
 import com.javaclasses.chat.webapp.command.impl.LoginController;
@@ -35,6 +36,7 @@ public class HandlerRegistry  {
             new HashMap<RequestContext, Handler>(){{
         put(new RequestContext("/register", "post"), new RegistrationController());
         put(new RequestContext("/login", "post"), new LoginController());
+        put(new RequestContext("/create-chat", "post"), new ChatCreationController());
     }};
 
     /**

@@ -209,6 +209,10 @@ public class UserServiceImpl implements UserService {
 
         final Token token = tokenRepository.findById(tokenId);
 
+        if (token == null) {
+            return null;
+        }
+
         final UserId userId = token.getUserId();
 
         final User user = userRepository.findById(userId);
