@@ -103,13 +103,14 @@ public final class TestUtils {
         return generateResponse(LEAVE_CHAT_URL, urlParameters);
     }
 
-    public static HttpResponse createMessage(String tokenId, String chatName, String message)
+    public static HttpResponse createMessage(String tokenId, String chatName, String message, String color)
             throws IOException {
 
         final List<NameValuePair> addMessageUrlParameters = new ArrayList<>();
         addMessageUrlParameters.add(new BasicNameValuePair("chatName", chatName));
         addMessageUrlParameters.add(new BasicNameValuePair("tokenId", tokenId));
         addMessageUrlParameters.add(new BasicNameValuePair("message", message));
+        addMessageUrlParameters.add(new BasicNameValuePair("color", color));
 
         return generateResponse(ADD_MESSAGE_URL, addMessageUrlParameters);
     }

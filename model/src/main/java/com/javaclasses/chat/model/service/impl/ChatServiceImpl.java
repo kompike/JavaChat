@@ -8,6 +8,7 @@ import com.javaclasses.chat.model.entity.Message;
 import com.javaclasses.chat.model.entity.User;
 import com.javaclasses.chat.model.entity.tinytype.ChatId;
 import com.javaclasses.chat.model.entity.tinytype.ChatName;
+import com.javaclasses.chat.model.entity.tinytype.TextColor;
 import com.javaclasses.chat.model.entity.tinytype.UserId;
 import com.javaclasses.chat.model.repository.impl.ChatRepository;
 import com.javaclasses.chat.model.repository.impl.UserRepository;
@@ -208,12 +209,17 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public MessageDTO addMessage(ChatId chatId, UserId userId, String message)
+    public MessageDTO addMessage(MessageDTO messageDTO)
             throws MessageCreationException {
 
         if (log.isInfoEnabled()) {
             log.info("Start adding new message...");
         }
+
+        final ChatId chatId = messageDTO.getChatId();
+        final UserId userId = messageDTO.getAuthor();
+        final String message = messageDTO.getMessage();
+        final TextColor color = messageDTO.getColor();
 
         final Chat chat = chatRepository.findById(chatId);
 
@@ -235,10 +241,10 @@ public class ChatServiceImpl implements ChatService {
             throw new MessageCreationException(NOT_ALLOWED_TO_POST_EMPTY_MESSAGE.toString());
         }
 
-        chat.addMessage(new Message(message, userId));
+        chat.addMessage(new Message(message, userId, color));
 
         try {
-            return new MessageDTO(message, userId, chatId);
+            return new MessageDTO(message, userId, chatId, color);
         } finally {
 
             if (log.isInfoEnabled()) {
@@ -260,7 +266,8 @@ public class ChatServiceImpl implements ChatService {
         final Collection<MessageDTO> messageList = new ArrayList<>();
 
         for (Message message : messages) {
-            messageList.add(new MessageDTO(message.getMessage(), message.getAuthor(), chatId));
+            messageList.add(new MessageDTO(message.getMessage(),
+                    message.getAuthor(), chatId, message.getColor()));
 
         }
 
@@ -293,7 +300,8 @@ public class ChatServiceImpl implements ChatService {
         final List<MessageDTO> messages = new ArrayList<>();
 
         for (Message message : chat.getMessages()) {
-            messages.add(new MessageDTO(message.getMessage(), message.getAuthor(),chat.getId()));
+            messages.add(new MessageDTO(message.getMessage(),
+                    message.getAuthor(), chat.getId(), message.getColor()));
         }
 
         return new ChatDTO(chat.getId(),

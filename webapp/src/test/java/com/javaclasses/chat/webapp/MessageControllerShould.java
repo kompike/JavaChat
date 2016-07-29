@@ -30,13 +30,13 @@ public class MessageControllerShould {
 
         joinChat(tokenId, chatName);
 
-        final HttpResponse addMessageResponse = createMessage(tokenId, chatName, "Hello)");
+        final HttpResponse addMessageResponse = createMessage(tokenId, chatName, "Hello)", "#000");
 
         final String addMessageResponseContent = getResponseContent(addMessageResponse);
 
         assertTrue("Result must contain messages field.",
                 addMessageResponseContent.contains("messages"));
-        assertTrue("Result must contain messages field.",
+        assertTrue("Result must contain message field.",
                 addMessageResponseContent.contains("Hello"));
     }
 
@@ -55,7 +55,7 @@ public class MessageControllerShould {
 
         createChat(tokenId, chatName);
 
-        final HttpResponse addMessageResponse = createMessage(tokenId, chatName, "Hello)");
+        final HttpResponse addMessageResponse = createMessage(tokenId, chatName, "Hello)", "#000");
 
         final String addMessageResponseContent = getResponseContent(addMessageResponse);
 
@@ -80,7 +80,7 @@ public class MessageControllerShould {
 
         joinChat(tokenId, chatName);
 
-        final HttpResponse addMessageResponse = createMessage(tokenId, chatName, "");
+        final HttpResponse addMessageResponse = createMessage(tokenId, chatName, "", "#000");
 
         final String addMessageResponseContent = getResponseContent(addMessageResponse);
 

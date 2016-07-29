@@ -42,7 +42,13 @@ public class HandlerRegistry  {
             log.info("Start adding handler...");
         }
 
-        registry.put(context, handler);
+        try {
+            registry.put(context, handler);
+        } finally {
+            if (log.isInfoEnabled()) {
+                log.info("New handler successfully added.");
+            }
+        }
     }
 
     /**
@@ -70,8 +76,7 @@ public class HandlerRegistry  {
             return handler;
         } finally {
             if (log.isInfoEnabled()) {
-                log.info("Handler successfully found: " +
-                        handler.getClass().getSimpleName());
+                log.info("Handler successfully found.");
             }
         }
     }

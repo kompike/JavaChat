@@ -1,6 +1,7 @@
 package com.javaclasses.chat.model.dto;
 
 import com.javaclasses.chat.model.entity.tinytype.ChatId;
+import com.javaclasses.chat.model.entity.tinytype.TextColor;
 import com.javaclasses.chat.model.entity.tinytype.UserId;
 
 /**
@@ -11,11 +12,13 @@ public class MessageDTO {
     private String message;
     private UserId author;
     private ChatId chatId;
+    private TextColor color;
 
-    public MessageDTO(String message, UserId author, ChatId chatId) {
+    public MessageDTO(String message, UserId author, ChatId chatId, TextColor color) {
         this.message = message;
         this.author = author;
         this.chatId = chatId;
+        this.color = color;
     }
 
     public String getMessage() {
@@ -30,6 +33,10 @@ public class MessageDTO {
         return chatId;
     }
 
+    public TextColor getColor() {
+        return color;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -39,7 +46,8 @@ public class MessageDTO {
 
         if (!message.equals(that.message)) return false;
         if (!author.equals(that.author)) return false;
-        return chatId.equals(that.chatId);
+        if (!chatId.equals(that.chatId)) return false;
+        return color.equals(that.color);
 
     }
 
@@ -48,6 +56,7 @@ public class MessageDTO {
         int result = message.hashCode();
         result = 31 * result + author.hashCode();
         result = 31 * result + chatId.hashCode();
+        result = 31 * result + color.hashCode();
         return result;
     }
 }

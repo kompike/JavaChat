@@ -69,6 +69,7 @@ public class JoiningChatController {
                 final StringBuilder builder = new StringBuilder("[");
 
                 final Collection<MessageDTO> messages = chatService.getChatMessages(chatDTO.getChatId());
+
                 for (MessageDTO messageDTO : messages) {
                     final JsonObject chatJson = new JsonObject();
                     chatJson.add("message", messageDTO.getMessage());

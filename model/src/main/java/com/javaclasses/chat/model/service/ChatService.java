@@ -3,7 +3,6 @@ package com.javaclasses.chat.model.service;
 import com.javaclasses.chat.model.dto.ChatDTO;
 import com.javaclasses.chat.model.dto.MessageDTO;
 import com.javaclasses.chat.model.dto.UserDTO;
-import com.javaclasses.chat.model.entity.Message;
 import com.javaclasses.chat.model.entity.tinytype.ChatId;
 import com.javaclasses.chat.model.entity.tinytype.ChatName;
 import com.javaclasses.chat.model.entity.tinytype.UserId;
@@ -32,7 +31,7 @@ public interface ChatService {
 
     Collection<UserDTO> getChatUsers(ChatId chatId);
 
-    MessageDTO addMessage(ChatId chatId, UserId userId, String message)
+    MessageDTO addMessage(MessageDTO messageDTO)
             throws MessageCreationException;
 
     Collection<MessageDTO> getChatMessages(ChatId chatId);

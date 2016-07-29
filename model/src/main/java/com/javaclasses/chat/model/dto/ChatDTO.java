@@ -26,16 +26,8 @@ public class ChatDTO {
         return chatId;
     }
 
-    public UserId getOwner() {
-        return owner;
-    }
-
     public String getChatName() {
         return chatName;
-    }
-
-    public List<MessageDTO> getMessages() {
-        return messages;
     }
 
     @Override

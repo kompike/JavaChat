@@ -60,6 +60,7 @@ public class ChatCreationController {
                 final StringBuilder builder = new StringBuilder("[");
 
                 final Collection<ChatDTO> chatList = chatService.findAll();
+
                 for (ChatDTO chatDTO : chatList) {
                     final JsonObject chatJson = new JsonObject();
                     chatJson.add("chatId", String.valueOf(chatDTO.getChatId().getId()));

@@ -1,9 +1,11 @@
 package com.javaclasses.chat.model;
 
 import com.javaclasses.chat.model.dto.ChatDTO;
+import com.javaclasses.chat.model.dto.MessageDTO;
 import com.javaclasses.chat.model.dto.RegistrationDTO;
 import com.javaclasses.chat.model.entity.tinytype.ChatId;
 import com.javaclasses.chat.model.entity.tinytype.ChatName;
+import com.javaclasses.chat.model.entity.tinytype.TextColor;
 import com.javaclasses.chat.model.entity.tinytype.UserId;
 import com.javaclasses.chat.model.service.*;
 import com.javaclasses.chat.model.service.impl.ChatServiceImpl;
@@ -220,7 +222,9 @@ public class ChatServiceShould {
         assertEquals("User did not join the chat.",
                 1, chatService.getChatUsers(chatId).size());
 
-        chatService.addMessage(chatId, userId, "New message!!!");
+        final MessageDTO messageDTO = new MessageDTO("New message!!!", userId, chatId, new TextColor("#000"));
+
+        chatService.addMessage(messageDTO);
 
         assertEquals("Message was not added.",
                 1, chatService.getChatMessages(chatId).size());
@@ -241,7 +245,8 @@ public class ChatServiceShould {
         final ChatId chatId = chatService.createChat(userId, new ChatName(chatName));
 
         try {
-            chatService.addMessage(chatId, userId, "New message!!!");
+            final MessageDTO messageDTO = new MessageDTO("New message!!!", userId, chatId, new TextColor("#000"));
+            chatService.addMessage(messageDTO);
             fail("Message was added to chat.");
         } catch (MessageCreationException ex) {
             assertEquals("Wrong message for adding message without joining chat.",
@@ -265,7 +270,8 @@ public class ChatServiceShould {
         chatService.joinChat(userId, chatId);
 
         try {
-            chatService.addMessage(chatId, userId, "");
+            final MessageDTO messageDTO = new MessageDTO("", userId, chatId, new TextColor("#000"));
+            chatService.addMessage(messageDTO);
             fail("Message was added to chat.");
         } catch (MessageCreationException ex) {
             assertEquals("Wrong message for adding message without joining chat.",
