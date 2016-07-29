@@ -3,7 +3,7 @@ package com.javaclasses.chat.webapp.command.impl;
 import com.javaclasses.chat.model.dto.ChatDTO;
 import com.javaclasses.chat.model.dto.MessageDTO;
 import com.javaclasses.chat.model.dto.UserDTO;
-import com.javaclasses.chat.model.entity.tinytype.ChatId;
+import com.javaclasses.chat.model.entity.tinytype.ChatName;
 import com.javaclasses.chat.model.entity.tinytype.TokenId;
 import com.javaclasses.chat.model.service.ChatJoiningException;
 import com.javaclasses.chat.model.service.ChatService;
@@ -35,24 +35,24 @@ public class JoiningChatController implements Handler {
             log.info("Start processing user request...");
         }
 
-        final String requestChatId = request.getParameter("chatId");
+        final String requestChatName = request.getParameter("chatName");
         final String requestTokenId = request.getParameter("tokenId");
 
-        final ChatId chatId = new ChatId(Long.valueOf(requestChatId));
+        final ChatName chatName = new ChatName(requestChatName);
         final TokenId tokenId = new TokenId(Long.valueOf(requestTokenId));
         final UserDTO user = userService.findByToken(tokenId);
-        final ChatDTO chatDTO = chatService.findById(chatId);
+        final ChatDTO chatDTO = chatService.findByName(chatName);
 
         final JsonObject jsonObject = new JsonObject();
 
         try {
-            chatService.joinChat(user.getUserId(), chatId);
-            jsonObject.add("chatId", String.valueOf(chatId.getId()));
+            chatService.joinChat(user.getUserId(), chatDTO.getChatId());
+            jsonObject.add("chatId", String.valueOf(chatDTO.getChatId().getId()));
             jsonObject.add("chatName", chatDTO.getChatName());
 
             final StringBuilder builder = new StringBuilder("[");
 
-            final Collection<MessageDTO> messages = chatService.getChatMessages(chatId);
+            final Collection<MessageDTO> messages = chatService.getChatMessages(chatDTO.getChatId());
             for (MessageDTO messageDTO : messages) {
                 final JsonObject chatJson = new JsonObject();
                 chatJson.add("message", messageDTO.getMessage());

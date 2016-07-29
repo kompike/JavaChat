@@ -1,7 +1,8 @@
 package com.javaclasses.chat.webapp.command.impl;
 
+import com.javaclasses.chat.model.dto.ChatDTO;
 import com.javaclasses.chat.model.dto.UserDTO;
-import com.javaclasses.chat.model.entity.tinytype.ChatId;
+import com.javaclasses.chat.model.entity.tinytype.ChatName;
 import com.javaclasses.chat.model.entity.tinytype.TokenId;
 import com.javaclasses.chat.model.service.ChatLeavingException;
 import com.javaclasses.chat.model.service.ChatService;
@@ -32,18 +33,19 @@ public class LeavingChatController implements Handler {
             log.info("Start processing user request...");
         }
 
-        final String requestChatId = request.getParameter("chatId");
+        final String requestChatName = request.getParameter("chatName");
         final String requestTokenId = request.getParameter("tokenId");
 
-        final ChatId chatId = new ChatId(Long.valueOf(requestChatId));
+        final ChatName chatName = new ChatName(requestChatName);
         final TokenId tokenId = new TokenId(Long.valueOf(requestTokenId));
         final UserDTO user = userService.findByToken(tokenId);
+        final ChatDTO chat = chatService.findByName(chatName);
 
         final JsonObject jsonObject = new JsonObject();
 
         try {
-            chatService.leaveChat(user.getUserId(), chatId);
-            jsonObject.add("chatId", String.valueOf(chatId));
+            chatService.leaveChat(user.getUserId(), chat.getChatId());
+            jsonObject.add("chatId", chat.getChatId().toString());
             jsonObject.setResponseStatusCode(200);
         } catch (ChatLeavingException e) {
             jsonObject.add("errorMessage", e.getMessage());
