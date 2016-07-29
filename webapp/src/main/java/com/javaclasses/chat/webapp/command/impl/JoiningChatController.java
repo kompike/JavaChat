@@ -35,15 +35,29 @@ public class JoiningChatController implements Handler {
             log.info("Start processing user request...");
         }
 
+        final JsonObject jsonObject = new JsonObject();
+
         final String requestChatName = request.getParameter("chatName");
         final String requestTokenId = request.getParameter("tokenId");
 
+        if (requestTokenId == null) {
+            jsonObject.add("errorMessage", "User not authorized");
+            jsonObject.setResponseStatusCode(403);
+            return jsonObject;
+        }
+
         final ChatName chatName = new ChatName(requestChatName);
         final TokenId tokenId = new TokenId(Long.valueOf(requestTokenId));
-        final UserDTO user = userService.findByToken(tokenId);
-        final ChatDTO chatDTO = chatService.findByName(chatName);
 
-        final JsonObject jsonObject = new JsonObject();
+        final UserDTO user = userService.findByToken(tokenId);
+
+        if (user == null) {
+            jsonObject.add("errorMessage", "User not authorized");
+            jsonObject.setResponseStatusCode(403);
+            return jsonObject;
+        }
+
+        final ChatDTO chatDTO = chatService.findByName(chatName);
 
         try {
             chatService.joinChat(user.getUserId(), chatDTO.getChatId());

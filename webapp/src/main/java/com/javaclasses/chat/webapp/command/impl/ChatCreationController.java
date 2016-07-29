@@ -32,14 +32,26 @@ public class ChatCreationController implements Handler {
         if (log.isInfoEnabled()) {
             log.info("Start processing user request...");
         }
+        final JsonObject jsonObject = new JsonObject();
 
         final String chatName = request.getParameter("chatName");
         final String tokenId = request.getParameter("tokenId");
 
+        if (tokenId == null) {
+            jsonObject.add("errorMessage", "User not authorized");
+            jsonObject.setResponseStatusCode(403);
+            return jsonObject;
+        }
+
         final TokenId id = new TokenId(Long.valueOf(tokenId));
         final UserDTO user = userService.findByToken(id);
 
-        final JsonObject jsonObject = new JsonObject();
+        if (user == null) {
+            jsonObject.add("errorMessage", "User not authorized");
+            jsonObject.setResponseStatusCode(403);
+            return jsonObject;
+        }
+
         try {
             chatService.createChat(user.getUserId(), new ChatName(chatName));
 

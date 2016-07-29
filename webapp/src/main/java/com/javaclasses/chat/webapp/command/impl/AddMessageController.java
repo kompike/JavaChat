@@ -36,16 +36,28 @@ public class AddMessageController implements Handler {
             log.info("Start processing user request...");
         }
 
+        final JsonObject jsonObject = new JsonObject();
+
         final String requestChatName = request.getParameter("chatName");
         final String requestTokenId = request.getParameter("tokenId");
         final String requestMessage = request.getParameter("message");
+
+        if (requestTokenId == null) {
+            jsonObject.add("errorMessage", "User not authorized");
+            jsonObject.setResponseStatusCode(403);
+            return jsonObject;
+        }
 
         final ChatName chatName = new ChatName(requestChatName);
         final TokenId tokenId = new TokenId(Long.valueOf(requestTokenId));
         final UserDTO user = userService.findByToken(tokenId);
         final ChatDTO chat = chatService.findByName(chatName);
 
-        final JsonObject jsonObject = new JsonObject();
+        if (user == null) {
+            jsonObject.add("errorMessage", "User not authorized");
+            jsonObject.setResponseStatusCode(403);
+            return jsonObject;
+        }
 
         try {
             chatService.addMessage(chat.getChatId(), user.getUserId(), requestMessage);
