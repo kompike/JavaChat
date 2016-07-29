@@ -2,19 +2,16 @@ package com.javaclasses.chat.webapp;
 
 import com.javaclasses.chat.model.service.UserRegistrationException;
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.List;
 
 import static com.javaclasses.chat.model.service.ErrorMessage.*;
-import static com.javaclasses.chat.webapp.TestUtils.*;
+import static com.javaclasses.chat.webapp.TestUtils.getResponseContent;
+import static com.javaclasses.chat.webapp.TestUtils.registerUser;
 import static org.junit.Assert.assertEquals;
 
 public class RegistrationControllerShould {
-
-    private static final String REGISTRATION_URL = "http://localhost:8080/register";
 
     @Test
     public void allowNewUserToRegister() throws IOException {
@@ -22,9 +19,7 @@ public class RegistrationControllerShould {
         final String nickname = "User";
         final String password = "password";
 
-        final List<NameValuePair> urlParameters = getRegistrationUrlParameters(nickname, password, password);
-
-        final HttpResponse response = generateResponse(REGISTRATION_URL, urlParameters);
+        final HttpResponse response = registerUser(nickname, password, password);
 
         final String responseContent = getResponseContent(response);
 
@@ -38,10 +33,8 @@ public class RegistrationControllerShould {
         final String nickname = "ExistingUser";
         final String password = "ExistingPassword";
 
-        final List<NameValuePair> urlParameters = getRegistrationUrlParameters(nickname, password, password);
-
-        generateResponse(REGISTRATION_URL, urlParameters);
-        final HttpResponse response = generateResponse(REGISTRATION_URL, urlParameters);
+        registerUser(nickname, password, password);
+        final HttpResponse response = registerUser(nickname, password, password);
 
         final String responseContent = getResponseContent(response);
 
@@ -55,9 +48,7 @@ public class RegistrationControllerShould {
         final String nickname = "New User";
         final String password = "passWithoutGaps";
 
-        final List<NameValuePair> urlParameters = getRegistrationUrlParameters(nickname, password, password);
-
-        final HttpResponse response = generateResponse(REGISTRATION_URL, urlParameters);
+        final HttpResponse response = registerUser(nickname, password, password);
 
         final String responseContent = getResponseContent(response);
 
@@ -72,9 +63,7 @@ public class RegistrationControllerShould {
         final String password = "firstPassword";
         final String confirmPassword = "secondPassword";
 
-        final List<NameValuePair> urlParameters = getRegistrationUrlParameters(nickname, password, confirmPassword);
-
-        final HttpResponse response = generateResponse(REGISTRATION_URL, urlParameters);
+        final HttpResponse response = registerUser(nickname, password, confirmPassword);
 
         final String responseContent = getResponseContent(response);
 
@@ -88,9 +77,7 @@ public class RegistrationControllerShould {
         final String nickname = "";
         final String password = "pass";
 
-        final List<NameValuePair> urlParameters = getRegistrationUrlParameters(nickname, password, password);
-
-        final HttpResponse response = generateResponse(REGISTRATION_URL, urlParameters);
+        final HttpResponse response = registerUser(nickname, password, password);
 
         final String responseContent = getResponseContent(response);
 
@@ -104,14 +91,9 @@ public class RegistrationControllerShould {
         final String nickname = "UserWithWhitespaces";
         final String password = "password";
 
-        final List<NameValuePair> urlParameters = getRegistrationUrlParameters(nickname, password, password);
+        registerUser(nickname, password, password);
 
-        generateResponse(REGISTRATION_URL, urlParameters);
-
-        final List<NameValuePair> urlParametersWithNewNickname =
-                getRegistrationUrlParameters("   UserWithWhitespaces  ", password, password);
-
-        final HttpResponse response = generateResponse(REGISTRATION_URL, urlParametersWithNewNickname);
+        final HttpResponse response = registerUser("  UserWithWhitespaces  ", password, password);
 
         final String responseContent = getResponseContent(response);
 

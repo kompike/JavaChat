@@ -1,7 +1,7 @@
-package com.javaclasses.chat.webapp.command.impl;
+package com.javaclasses.chat.webapp.handler.impl;
 
 import com.javaclasses.chat.webapp.JsonObject;
-import com.javaclasses.chat.webapp.command.Handler;
+import com.javaclasses.chat.webapp.handler.Handler;
 
 import javax.servlet.http.HttpServletRequest;
 

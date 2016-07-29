@@ -1,4 +1,4 @@
-package com.javaclasses.chat.webapp.command.impl;
+package com.javaclasses.chat.webapp.handler.impl;
 
 import com.javaclasses.chat.model.dto.ChatDTO;
 import com.javaclasses.chat.model.dto.MessageDTO;
@@ -11,7 +11,7 @@ import com.javaclasses.chat.model.service.UserService;
 import com.javaclasses.chat.model.service.impl.ChatServiceImpl;
 import com.javaclasses.chat.model.service.impl.UserServiceImpl;
 import com.javaclasses.chat.webapp.JsonObject;
-import com.javaclasses.chat.webapp.command.Handler;
+import com.javaclasses.chat.webapp.handler.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

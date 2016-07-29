@@ -1,27 +1,27 @@
-package com.javaclasses.chat.webapp.command.impl;
+package com.javaclasses.chat.webapp.handler.impl;
 
 import com.javaclasses.chat.model.dto.ChatDTO;
 import com.javaclasses.chat.model.dto.UserDTO;
 import com.javaclasses.chat.model.entity.tinytype.ChatName;
 import com.javaclasses.chat.model.entity.tinytype.TokenId;
+import com.javaclasses.chat.model.service.ChatLeavingException;
 import com.javaclasses.chat.model.service.ChatService;
 import com.javaclasses.chat.model.service.UserService;
 import com.javaclasses.chat.model.service.impl.ChatServiceImpl;
 import com.javaclasses.chat.model.service.impl.UserServiceImpl;
 import com.javaclasses.chat.webapp.JsonObject;
-import com.javaclasses.chat.webapp.command.Handler;
+import com.javaclasses.chat.webapp.handler.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collection;
 
 /**
- * Implementation of {@link Handler} interface for chat creation process
+ * Implementation of {@link Handler} interface for leaving chat process
  */
-public class ChatCreationController implements Handler {
+public class LeavingChatController implements Handler {
 
-    private final Logger log = LoggerFactory.getLogger(ChatCreationController.class);
+    private final Logger log = LoggerFactory.getLogger(LeavingChatController.class);
 
     private final UserService userService = UserServiceImpl.getInstance();
     private final ChatService chatService = ChatServiceImpl.getInstance();
@@ -32,19 +32,21 @@ public class ChatCreationController implements Handler {
         if (log.isInfoEnabled()) {
             log.info("Start processing user request...");
         }
+
         final JsonObject jsonObject = new JsonObject();
 
-        final String chatName = request.getParameter("chatName");
-        final String tokenId = request.getParameter("tokenId");
+        final String requestChatName = request.getParameter("chatName");
+        final String requestTokenId = request.getParameter("tokenId");
 
-        if (tokenId == null) {
+        if (requestTokenId == null) {
             jsonObject.add("errorMessage", "User not authorized");
             jsonObject.setResponseStatusCode(403);
             return jsonObject;
         }
 
-        final TokenId id = new TokenId(Long.valueOf(tokenId));
-        final UserDTO user = userService.findByToken(id);
+        final ChatName chatName = new ChatName(requestChatName);
+        final TokenId tokenId = new TokenId(Long.valueOf(requestTokenId));
+        final UserDTO user = userService.findByToken(tokenId);
 
         if (user == null) {
             jsonObject.add("errorMessage", "User not authorized");
@@ -52,28 +54,13 @@ public class ChatCreationController implements Handler {
             return jsonObject;
         }
 
+        final ChatDTO chat = chatService.findByName(chatName);
+
         try {
-            chatService.createChat(user.getUserId(), new ChatName(chatName));
-
-            final StringBuilder builder = new StringBuilder("[");
-
-            final Collection<ChatDTO> chatList = chatService.findAll();
-            for (ChatDTO chatDTO : chatList) {
-                final JsonObject chatJson = new JsonObject();
-                chatJson.add("chatId", String.valueOf(chatDTO.getChatId().getId()));
-                chatJson.add("chatName", chatDTO.getChatName());
-                builder.append(chatJson.generateJson()).append(",");
-            }
-
-            if (builder.length() > 1) {
-                builder.setLength(builder.length() - 1);
-            }
-            builder.append("]");
-
-            jsonObject.add("chatList", builder.toString());
+            chatService.leaveChat(user.getUserId(), chat.getChatId());
+            jsonObject.add("chatId", chat.getChatId().toString());
             jsonObject.setResponseStatusCode(200);
-
-        } catch (Exception e) {
+        } catch (ChatLeavingException e) {
             jsonObject.add("errorMessage", e.getMessage());
             jsonObject.setResponseStatusCode(500);
         }

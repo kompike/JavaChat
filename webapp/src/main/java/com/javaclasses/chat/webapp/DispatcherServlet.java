@@ -1,7 +1,7 @@
 package com.javaclasses.chat.webapp;
 
-import com.javaclasses.chat.webapp.command.Handler;
-import com.javaclasses.chat.webapp.command.RequestContext;
+import com.javaclasses.chat.webapp.handler.Handler;
+import com.javaclasses.chat.webapp.handler.RequestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

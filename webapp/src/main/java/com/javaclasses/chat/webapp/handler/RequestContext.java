@@ -1,4 +1,4 @@
-package com.javaclasses.chat.webapp.command;
+package com.javaclasses.chat.webapp.handler;
 
 /**
  * Holder of request data
