@@ -11,4 +11,8 @@
         <servlet-name>DispatcherServlet</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
+
+    <listener>
+        <listener-class>com.javaclasses.chat.webapp.listener.ContextListener</listener-class>
+    </listener>
 </web-app>

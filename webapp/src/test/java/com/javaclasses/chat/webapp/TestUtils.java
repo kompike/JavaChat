@@ -79,40 +79,32 @@ public final class TestUtils {
         return generateResponse(LOGIN_URL, loginUrlParameters);
     }
 
-    public static HttpResponse createChat(HttpResponse response, String chatName)
+    public static HttpResponse createChat(String tokenId, String chatName)
             throws IOException {
-
-        final String tokenId = getParameterFromResponse(response, "tokenId");
 
         final List<NameValuePair> urlParameters = getChatUrlParameters(chatName, tokenId);
 
         return generateResponse(CHAT_CREATION_URL, urlParameters);
     }
 
-    public static HttpResponse joinChat(HttpResponse response, String chatName)
+    public static HttpResponse joinChat(String tokenId, String chatName)
             throws IOException {
-
-        final String tokenId = getParameterFromResponse(response, "tokenId");
 
         final List<NameValuePair> urlParameters = getChatUrlParameters(chatName, tokenId);
 
         return generateResponse(JOIN_CHAT_URL, urlParameters);
     }
 
-    public static HttpResponse leaveChat(HttpResponse response, String chatName)
+    public static HttpResponse leaveChat(String tokenId, String chatName)
             throws IOException {
-
-        final String tokenId = getParameterFromResponse(response, "tokenId");
 
         final List<NameValuePair> urlParameters = getChatUrlParameters(chatName, tokenId);
 
         return generateResponse(LEAVE_CHAT_URL, urlParameters);
     }
 
-    public static HttpResponse createMessage(HttpResponse response, String chatName, String message)
+    public static HttpResponse createMessage(String tokenId, String chatName, String message)
             throws IOException {
-
-        final String tokenId = getParameterFromResponse(response, "tokenId");
 
         final List<NameValuePair> addMessageUrlParameters = new ArrayList<>();
         addMessageUrlParameters.add(new BasicNameValuePair("chatName", chatName));
@@ -122,16 +114,7 @@ public final class TestUtils {
         return generateResponse(ADD_MESSAGE_URL, addMessageUrlParameters);
     }
 
-    private static List<NameValuePair> getChatUrlParameters(String chatName, String tokenId) {
-
-        final List<NameValuePair> chatUrlParameters = new ArrayList<>();
-        chatUrlParameters.add(new BasicNameValuePair("chatName", chatName));
-        chatUrlParameters.add(new BasicNameValuePair("tokenId", tokenId));
-
-        return chatUrlParameters;
-    }
-
-    private static String getParameterFromResponse(HttpResponse httpResponse, String parameter)
+    public static String getParameterFromResponse(HttpResponse httpResponse, String parameter)
             throws IOException {
         final String loginResponse = getResponseContent(httpResponse);
         final Pattern pattern = Pattern.compile(String.format("\'%s\':'(\\d+|\\w+)'", parameter));
@@ -141,5 +124,14 @@ public final class TestUtils {
         }
 
         return "";
+    }
+
+    private static List<NameValuePair> getChatUrlParameters(String chatName, String tokenId) {
+
+        final List<NameValuePair> chatUrlParameters = new ArrayList<>();
+        chatUrlParameters.add(new BasicNameValuePair("chatName", chatName));
+        chatUrlParameters.add(new BasicNameValuePair("tokenId", tokenId));
+
+        return chatUrlParameters;
     }
 }

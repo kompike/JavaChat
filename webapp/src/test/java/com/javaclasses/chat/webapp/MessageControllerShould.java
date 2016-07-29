@@ -24,11 +24,13 @@ public class MessageControllerShould {
 
         final HttpResponse httpResponse = loginUser(nickname, password);
 
-        createChat(httpResponse, chatName);
+        final String tokenId = getParameterFromResponse(httpResponse, "tokenId");
 
-        joinChat(httpResponse, chatName);
+        createChat(tokenId, chatName);
 
-        final HttpResponse addMessageResponse = createMessage(httpResponse, chatName, "Hello)");
+        joinChat(tokenId, chatName);
+
+        final HttpResponse addMessageResponse = createMessage(tokenId, chatName, "Hello)");
 
         final String addMessageResponseContent = getResponseContent(addMessageResponse);
 
@@ -49,9 +51,11 @@ public class MessageControllerShould {
 
         final HttpResponse httpResponse = loginUser(nickname, password);
 
-        createChat(httpResponse, chatName);
+        final String tokenId = getParameterFromResponse(httpResponse, "tokenId");
 
-        final HttpResponse addMessageResponse = createMessage(httpResponse, chatName, "Hello)");
+        createChat(tokenId, chatName);
+
+        final HttpResponse addMessageResponse = createMessage(tokenId, chatName, "Hello)");
 
         final String addMessageResponseContent = getResponseContent(addMessageResponse);
 
@@ -70,11 +74,13 @@ public class MessageControllerShould {
 
         final HttpResponse httpResponse = loginUser(nickname, password);
 
-        createChat(httpResponse, chatName);
+        final String tokenId = getParameterFromResponse(httpResponse, "tokenId");
 
-        joinChat(httpResponse, chatName);
+        createChat(tokenId, chatName);
 
-        final HttpResponse addMessageResponse = createMessage(httpResponse, chatName, "");
+        joinChat(tokenId, chatName);
+
+        final HttpResponse addMessageResponse = createMessage(tokenId, chatName, "");
 
         final String addMessageResponseContent = getResponseContent(addMessageResponse);
 

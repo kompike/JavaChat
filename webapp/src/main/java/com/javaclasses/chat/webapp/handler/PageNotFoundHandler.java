@@ -1,4 +1,4 @@
-package com.javaclasses.chat.webapp.handler.impl;
+package com.javaclasses.chat.webapp.handler;
 
 import com.javaclasses.chat.webapp.JsonObject;
 import com.javaclasses.chat.webapp.handler.Handler;
@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * Implementation of {@link Handler} interface for handling error requests
  */
-public class PageNotFoundController implements Handler {
+public class PageNotFoundHandler implements Handler {
 
     @Override
     public JsonObject process(HttpServletRequest request) {

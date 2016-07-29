@@ -1,8 +1,8 @@
 package com.javaclasses.chat.webapp;
 
 import com.javaclasses.chat.webapp.handler.Handler;
+import com.javaclasses.chat.webapp.handler.PageNotFoundHandler;
 import com.javaclasses.chat.webapp.handler.RequestContext;
-import com.javaclasses.chat.webapp.handler.impl.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,15 +29,21 @@ public class HandlerRegistry  {
         return handlerRegistry;
     }
 
-    private final Map<RequestContext, Handler> registry =
-            new HashMap<RequestContext, Handler>(){{
-        put(new RequestContext("/register", "post"), new RegistrationController());
-        put(new RequestContext("/login", "post"), new LoginController());
-        put(new RequestContext("/create-chat", "post"), new ChatCreationController());
-        put(new RequestContext("/join-chat", "post"), new JoiningChatController());
-        put(new RequestContext("/leave-chat", "post"), new LeavingChatController());
-        put(new RequestContext("/add-message", "post"), new AddMessageController());
-    }};
+    private final Map<RequestContext, Handler> registry = new HashMap<>();
+
+    /**
+     * Add new handler to registry
+     * @param context Request data
+     * @param handler Handler instance to be executed by given context
+     */
+    public void registerHandler(RequestContext context, Handler handler) {
+
+        if (log.isInfoEnabled()) {
+            log.info("Start adding handler...");
+        }
+
+        registry.put(context, handler);
+    }
 
     /**
      * Searches handler by given data
@@ -57,7 +63,7 @@ public class HandlerRegistry  {
                 log.warn("Handler by given request context not found.");
             }
 
-            return new PageNotFoundController();
+            return new PageNotFoundHandler();
         }
 
         try {

@@ -22,7 +22,9 @@ public class ChatControllerShould {
 
         final HttpResponse httpResponse = loginUser(nickname, password);
 
-        final HttpResponse response = createChat(httpResponse, "myNewChat");
+        final String tokenId = getParameterFromResponse(httpResponse, "tokenId");
+
+        final HttpResponse response = createChat(tokenId, "myNewChat");
 
         final String responseContent = getResponseContent(response);
 
@@ -41,8 +43,10 @@ public class ChatControllerShould {
 
         final HttpResponse httpResponse = loginUser(nickname, password);
 
-        createChat(httpResponse, chatName);
-        final HttpResponse response = createChat(httpResponse, chatName);
+        final String tokenId = getParameterFromResponse(httpResponse, "tokenId");
+
+        createChat(tokenId, chatName);
+        final HttpResponse response = createChat(tokenId, chatName);
 
         final String responseContent = getResponseContent(response);
 
@@ -60,7 +64,9 @@ public class ChatControllerShould {
 
         final HttpResponse httpResponse = loginUser(nickname, password);
 
-        final HttpResponse response = createChat(httpResponse, "");
+        final String tokenId = getParameterFromResponse(httpResponse, "tokenId");
+
+        final HttpResponse response = createChat(tokenId, "");
 
         final String responseContent = getResponseContent(response);
 
@@ -78,9 +84,11 @@ public class ChatControllerShould {
 
         final HttpResponse httpResponse = loginUser(nickname, password);
 
-        createChat(httpResponse, "chatWithWhiteSpaces");
+        final String tokenId = getParameterFromResponse(httpResponse, "tokenId");
 
-        final HttpResponse response = createChat(httpResponse, "  chatWithWhiteSpaces   ");
+        createChat(tokenId, "chatWithWhiteSpaces");
+
+        final HttpResponse response = createChat(tokenId, "  chatWithWhiteSpaces   ");
 
         final String responseContent = getResponseContent(response);
 
@@ -99,9 +107,11 @@ public class ChatControllerShould {
 
         final HttpResponse httpResponse = loginUser(nickname, password);
 
-        createChat(httpResponse, chatName);
+        final String tokenId = getParameterFromResponse(httpResponse, "tokenId");
 
-        final HttpResponse joinChatResponse = joinChat(httpResponse, chatName);
+        createChat(tokenId, chatName);
+
+        final HttpResponse joinChatResponse = joinChat(tokenId, chatName);
 
         final String responseContent = getResponseContent(joinChatResponse);
 
@@ -120,11 +130,13 @@ public class ChatControllerShould {
 
         final HttpResponse httpResponse = loginUser(nickname, password);
 
-        createChat(httpResponse, chatName);
-        joinChat(httpResponse, chatName);
-        final HttpResponse joinChatResponse = joinChat(httpResponse, chatName);
+        final String tokenId = getParameterFromResponse(httpResponse, "tokenId");
 
-        final String responseContent = getResponseContent(joinChatResponse);
+        createChat(tokenId, chatName);
+        joinChat(tokenId, chatName);
+        final HttpResponse response = joinChat(tokenId, chatName);
+
+        final String responseContent = getResponseContent(response);
 
         assertEquals("Already joined user joined chat again.",
                 "{'errorMessage':'" + USER_ALREADY_JOINED + "'}", responseContent);
@@ -141,10 +153,12 @@ public class ChatControllerShould {
 
         final HttpResponse httpResponse = loginUser(nickname, password);
 
-        createChat(httpResponse, chatName);
-        joinChat(httpResponse, chatName);
+        final String tokenId = getParameterFromResponse(httpResponse, "tokenId");
 
-        final HttpResponse response = leaveChat(httpResponse, chatName);
+        createChat(tokenId, chatName);
+        joinChat(tokenId, chatName);
+
+        final HttpResponse response = leaveChat(tokenId, chatName);
 
         final String responseContent = getResponseContent(response);
 
@@ -164,11 +178,13 @@ public class ChatControllerShould {
 
         final HttpResponse httpResponse = loginUser(nickname, password);
 
-        createChat(httpResponse, chatName);
-        joinChat(httpResponse, chatName);
-        leaveChat(httpResponse, chatName);
+        final String tokenId = getParameterFromResponse(httpResponse, "tokenId");
 
-        final HttpResponse response = leaveChat(httpResponse, chatName);
+        createChat(tokenId, chatName);
+        joinChat(tokenId, chatName);
+        leaveChat(tokenId, chatName);
+
+        final HttpResponse response = leaveChat(tokenId, chatName);
 
         final String responseContent = getResponseContent(response);
 
