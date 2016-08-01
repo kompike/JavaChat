@@ -12,12 +12,8 @@ public class ContextListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        RegistrationController.init();
-        LoginController.init();
-        ChatCreationController.init();
-        JoiningChatController.init();
-        LeavingChatController.init();
-        AddMessageController.init();
+        UserController.init();
+        ChatController.init();
     }
 
     @Override

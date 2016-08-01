@@ -3,6 +3,8 @@ package com.javaclasses.chat.webapp;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
+
 /**
  * Entity for creation and generation of string
  * with necessary data in JSON format
@@ -20,7 +22,7 @@ public class JsonObject {
     public int getResponseStatusCode() {
 
         if (responseStatusCode == 0) {
-            return 404;
+            return SC_NOT_FOUND;
         }
 
         return responseStatusCode;
