@@ -1,6 +1,6 @@
 package com.javaclasses.chat.webapp;
 
-import org.apache.http.HttpResponse;
+import org.apache.http.HttpEntity;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -12,21 +12,27 @@ import static org.junit.Assert.assertTrue;
 
 public class ChatControllerShould {
 
+    private static final String PARAMETER_NAME = "tokenId";
+
+    private final String message = "Hello)";
+    private final String color = "#000";
+
     @Test
     public void allowUserToCreateNewChat() throws IOException {
 
         final String nickname = "UserWithoutChat";
         final String password = "NewPassword";
+        final String chatName = "myNewChat";
 
         registerUser(nickname, password, password);
 
-        final HttpResponse httpResponse = loginUser(nickname, password);
+        final HttpEntity loginHttpEntity = loginUser(nickname, password);
 
-        final String tokenId = getParameterFromResponse(httpResponse, "tokenId");
+        final String tokenId = getParameterFromResponse(loginHttpEntity, PARAMETER_NAME);
 
-        final HttpResponse response = createChat(tokenId, "myNewChat");
+        final HttpEntity httpEntity = createChat(tokenId, chatName);
 
-        final String responseContent = getResponseContent(response);
+        final String responseContent = getResponseContent(httpEntity);
 
         assertTrue("Result must contain chatList field.",
                 responseContent.contains("chatList"));
@@ -41,14 +47,14 @@ public class ChatControllerShould {
 
         registerUser(nickname, password, password);
 
-        final HttpResponse httpResponse = loginUser(nickname, password);
+        final HttpEntity loginHttpEntity = loginUser(nickname, password);
 
-        final String tokenId = getParameterFromResponse(httpResponse, "tokenId");
+        final String tokenId = getParameterFromResponse(loginHttpEntity, PARAMETER_NAME);
 
         createChat(tokenId, chatName);
-        final HttpResponse response = createChat(tokenId, chatName);
+        final HttpEntity httpEntity = createChat(tokenId, chatName);
 
-        final String responseContent = getResponseContent(response);
+        final String responseContent = getResponseContent(httpEntity);
 
         assertEquals("Already existing chat was created.",
                 "{'errorMessage':'" + CHAT_ALREADY_EXISTS + "'}", responseContent);
@@ -62,13 +68,13 @@ public class ChatControllerShould {
 
         registerUser(nickname, password, password);
 
-        final HttpResponse httpResponse = loginUser(nickname, password);
+        final HttpEntity loginHttpEntity = loginUser(nickname, password);
 
-        final String tokenId = getParameterFromResponse(httpResponse, "tokenId");
+        final String tokenId = getParameterFromResponse(loginHttpEntity, PARAMETER_NAME);
 
-        final HttpResponse response = createChat(tokenId, "");
+        final HttpEntity httpEntity = createChat(tokenId, "");
 
-        final String responseContent = getResponseContent(response);
+        final String responseContent = getResponseContent(httpEntity);
 
         assertEquals("Already existing chat was created.",
                 "{'errorMessage':'" + CHAT_NAME_CANNOT_BE_EMPTY + "'}", responseContent);
@@ -82,15 +88,15 @@ public class ChatControllerShould {
 
         registerUser(nickname, password, password);
 
-        final HttpResponse httpResponse = loginUser(nickname, password);
+        final HttpEntity loginHttpEntity = loginUser(nickname, password);
 
-        final String tokenId = getParameterFromResponse(httpResponse, "tokenId");
+        final String tokenId = getParameterFromResponse(loginHttpEntity, PARAMETER_NAME);
 
         createChat(tokenId, "chatWithWhiteSpaces");
 
-        final HttpResponse response = createChat(tokenId, "  chatWithWhiteSpaces   ");
+        final HttpEntity httpEntity = createChat(tokenId, "  chatWithWhiteSpaces   ");
 
-        final String responseContent = getResponseContent(response);
+        final String responseContent = getResponseContent(httpEntity);
 
         assertEquals("Already existing chat was created.",
                 "{'errorMessage':'" + CHAT_ALREADY_EXISTS + "'}", responseContent);
@@ -105,15 +111,15 @@ public class ChatControllerShould {
 
         registerUser(nickname, password, password);
 
-        final HttpResponse httpResponse = loginUser(nickname, password);
+        final HttpEntity loginHttpEntity = loginUser(nickname, password);
 
-        final String tokenId = getParameterFromResponse(httpResponse, "tokenId");
+        final String tokenId = getParameterFromResponse(loginHttpEntity, PARAMETER_NAME);
 
         createChat(tokenId, chatName);
 
-        final HttpResponse joinChatResponse = joinChat(tokenId, chatName);
+        final HttpEntity httpEntity = joinChat(tokenId, chatName);
 
-        final String responseContent = getResponseContent(joinChatResponse);
+        final String responseContent = getResponseContent(httpEntity);
 
         assertTrue("Result must contain messages field.",
                 responseContent.contains("messages"));
@@ -128,15 +134,15 @@ public class ChatControllerShould {
 
         registerUser(nickname, password, password);
 
-        final HttpResponse httpResponse = loginUser(nickname, password);
+        final HttpEntity loginHttpEntity = loginUser(nickname, password);
 
-        final String tokenId = getParameterFromResponse(httpResponse, "tokenId");
+        final String tokenId = getParameterFromResponse(loginHttpEntity, PARAMETER_NAME);
 
         createChat(tokenId, chatName);
         joinChat(tokenId, chatName);
-        final HttpResponse response = joinChat(tokenId, chatName);
+        final HttpEntity httpEntity = joinChat(tokenId, chatName);
 
-        final String responseContent = getResponseContent(response);
+        final String responseContent = getResponseContent(httpEntity);
 
         assertEquals("Already joined user joined chat again.",
                 "{'errorMessage':'" + USER_ALREADY_JOINED + "'}", responseContent);
@@ -151,16 +157,16 @@ public class ChatControllerShould {
 
         registerUser(nickname, password, password);
 
-        final HttpResponse httpResponse = loginUser(nickname, password);
+        final HttpEntity loginHttpEntity = loginUser(nickname, password);
 
-        final String tokenId = getParameterFromResponse(httpResponse, "tokenId");
+        final String tokenId = getParameterFromResponse(loginHttpEntity, PARAMETER_NAME);
 
         createChat(tokenId, chatName);
         joinChat(tokenId, chatName);
 
-        final HttpResponse response = leaveChat(tokenId, chatName);
+        final HttpEntity httpEntity = leaveChat(tokenId, chatName);
 
-        final String responseContent = getResponseContent(response);
+        final String responseContent = getResponseContent(httpEntity);
 
         assertTrue("Result must contain chatId field.",
                    responseContent.contains("chatId"));
@@ -176,19 +182,94 @@ public class ChatControllerShould {
 
         registerUser(nickname, password, password);
 
-        final HttpResponse httpResponse = loginUser(nickname, password);
+        final HttpEntity loginHttpEntity = loginUser(nickname, password);
 
-        final String tokenId = getParameterFromResponse(httpResponse, "tokenId");
+        final String tokenId = getParameterFromResponse(loginHttpEntity, PARAMETER_NAME);
 
         createChat(tokenId, chatName);
         joinChat(tokenId, chatName);
         leaveChat(tokenId, chatName);
 
-        final HttpResponse response = leaveChat(tokenId, chatName);
+        final HttpEntity httpEntity = leaveChat(tokenId, chatName);
 
-        final String responseContent = getResponseContent(response);
+        final String responseContent = getResponseContent(httpEntity);
 
         assertEquals("Already left user left chat again.",
                 "{'errorMessage':'" + USER_ALREADY_LEFT + "'}", responseContent);
+    }
+
+    @Test
+    public void allowUserToPostMessagesInChat() throws IOException {
+
+        final String nickname = "MessagePoster";
+        final String password = "NewPassword";
+        final String chatName = "AnotherNewChat";
+
+        registerUser(nickname, password, password);
+
+        final HttpEntity loginHttpEntity = loginUser(nickname, password);
+
+        final String tokenId = getParameterFromResponse(loginHttpEntity, PARAMETER_NAME);
+
+        createChat(tokenId, chatName);
+
+        joinChat(tokenId, chatName);
+
+        final HttpEntity httpEntity = createMessage(tokenId, chatName, message, color);
+
+        final String addMessageResponseContent = getResponseContent(httpEntity);
+
+        assertTrue("Result must contain messages field.",
+                addMessageResponseContent.contains("messages"));
+        assertTrue("Result must contain message field.",
+                addMessageResponseContent.contains("Hello"));
+    }
+
+    @Test
+    public void prohibitUserToAddMessageWithoutJoiningChat() throws IOException {
+
+        final String nickname = "NotJoinedMessagePoster";
+        final String password = "NewPassword";
+        final String chatName = "AnotherNewChat";
+
+        registerUser(nickname, password, password);
+
+        final HttpEntity loginHttpEntity = loginUser(nickname, password);
+
+        final String tokenId = getParameterFromResponse(loginHttpEntity, PARAMETER_NAME);
+
+        createChat(tokenId, chatName);
+
+        final HttpEntity httpEntity = createMessage(tokenId, chatName, message, color);
+
+        final String addMessageResponseContent = getResponseContent(httpEntity);
+
+        assertEquals("Not joined user posted message.",
+                "{'errorMessage':'" + USER_IS_NOT_IN_CHAT + "'}", addMessageResponseContent);
+    }
+
+    @Test
+    public void prohibitUserToPostEmptyMessage() throws IOException {
+
+        final String nickname = "UserWithEmptyMessage";
+        final String password = "NewPassword";
+        final String chatName = "AnotherNewChat";
+
+        registerUser(nickname, password, password);
+
+        final HttpEntity loginHttpEntity = loginUser(nickname, password);
+
+        final String tokenId = getParameterFromResponse(loginHttpEntity, PARAMETER_NAME);
+
+        createChat(tokenId, chatName);
+
+        joinChat(tokenId, chatName);
+
+        final HttpEntity httpEntity = createMessage(tokenId, chatName, "", color);
+
+        final String addMessageResponseContent = getResponseContent(httpEntity);
+
+        assertEquals("Empty message was posted.",
+                "{'errorMessage':'" + NOT_ALLOWED_TO_POST_EMPTY_MESSAGE + "'}", addMessageResponseContent);
     }
 }

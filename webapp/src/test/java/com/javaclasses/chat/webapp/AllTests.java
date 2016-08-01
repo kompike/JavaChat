@@ -4,7 +4,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ChatControllerShould.class, LoginControllerShould.class,
-        MessageControllerShould.class, RegistrationControllerShould.class})
+@Suite.SuiteClasses({ChatControllerShould.class, UserControllerShould.class})
 public class AllTests {
 }
