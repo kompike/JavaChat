@@ -43,9 +43,12 @@ public class DispatcherServlet extends HttpServlet {
         final RequestContext requestContext = new RequestContext(uri, method);
 
         final Handler handler = registry.getHandler(requestContext);
-        final JsonObject jsonObject = handler.process(request);
+        final JsonObject jsonObject = handler.process(request, response);
 
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
         final PrintWriter printWriter = response.getWriter();
+
         printWriter.write(jsonObject.generateJson());
         response.setStatus(jsonObject.getResponseStatusCode());
 

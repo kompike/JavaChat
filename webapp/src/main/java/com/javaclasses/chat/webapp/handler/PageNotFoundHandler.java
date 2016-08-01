@@ -3,6 +3,7 @@ package com.javaclasses.chat.webapp.handler;
 import com.javaclasses.chat.webapp.JsonObject;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 
@@ -12,7 +13,7 @@ import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 public class PageNotFoundHandler implements Handler {
 
     @Override
-    public JsonObject process(HttpServletRequest request) {
+    public JsonObject process(HttpServletRequest request, HttpServletResponse response) {
 
         final String errorMessage = "Page not found";
 

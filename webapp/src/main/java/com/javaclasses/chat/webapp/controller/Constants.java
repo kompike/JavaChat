@@ -9,12 +9,12 @@ public final class Constants {
     }
 
     // Possible URLs
-    /*package*/ static final String LOGIN_URL = "/login";
-    /*package*/ static final String USER_REGISTRATION_URL = "/register";
-    /*package*/ static final String CREATE_CHAT_URL = "/chat/create";
-    /*package*/ static final String LEAVE_CHAT_URL = "/chat/leave";
-    /*package*/ static final String JOIN_CHAT_URL = "/chat/join";
-    /*package*/ static final String ADD_MESSAGE_URL = "/message/add";
+    /*package*/ static final String LOGIN_URL = "/api/login";
+    /*package*/ static final String USER_REGISTRATION_URL = "/api/register";
+    /*package*/ static final String CREATE_CHAT_URL = "/api/chat/create";
+    /*package*/ static final String LEAVE_CHAT_URL = "/api/chat/leave";
+    /*package*/ static final String JOIN_CHAT_URL = "/api/chat/join";
+    /*package*/ static final String ADD_MESSAGE_URL = "/api/message/add";
 
     // Possible request methods
     /*package*/ static final String POST_METHOD = "post";

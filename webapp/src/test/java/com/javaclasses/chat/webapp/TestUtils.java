@@ -26,7 +26,7 @@ import static org.apache.http.HttpHeaders.USER_AGENT;
 /*package*/ final class TestUtils {
 
     // URL constants
-    private static final String URL = "http://localhost:8080/";
+    private static final String URL = "http://localhost:8080/api/";
     private static final String REGISTRATION_URL = URL + "register";
     private static final String LOGIN_URL = URL + "login";
     private static final String CHAT_CREATION_URL = URL + "chat/create";

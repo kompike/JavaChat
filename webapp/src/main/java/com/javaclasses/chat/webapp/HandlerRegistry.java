@@ -59,14 +59,14 @@ public class HandlerRegistry  {
     public Handler getHandler(RequestContext requestContext) {
 
         if (log.isInfoEnabled()) {
-            log.info("Start looking for handler...");
+            log.info("Start looking for handler..." + requestContext.toString());
         }
 
         final Handler handler = registry.get(requestContext);
 
         if (handler == null) {
             if (log.isWarnEnabled()) {
-                log.warn("Handler by given request context not found.");
+                log.warn("Handler by given request context not found: " + requestContext.toString());
             }
 
             return new PageNotFoundHandler();
@@ -76,7 +76,7 @@ public class HandlerRegistry  {
             return handler;
         } finally {
             if (log.isInfoEnabled()) {
-                log.info("Handler successfully found.");
+                log.info("Handler successfully found. " + requestContext.toString());
             }
         }
     }

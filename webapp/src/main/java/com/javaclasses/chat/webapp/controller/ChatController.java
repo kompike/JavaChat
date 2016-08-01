@@ -43,7 +43,7 @@ public class ChatController {
     }
 
     private void createChat() {
-        handlerRegistry.registerHandler(new RequestContext(CREATE_CHAT_URL, POST_METHOD), request -> {
+        handlerRegistry.registerHandler(new RequestContext(CREATE_CHAT_URL, POST_METHOD), (request, response) -> {
 
             if (log.isInfoEnabled()) {
                 log.info("Start processing creating chat request...");
@@ -82,7 +82,7 @@ public class ChatController {
     }
 
     private void joinChat() {
-        handlerRegistry.registerHandler(new RequestContext(JOIN_CHAT_URL, POST_METHOD), request -> {
+        handlerRegistry.registerHandler(new RequestContext(JOIN_CHAT_URL, POST_METHOD), (request, response) -> {
 
             if (log.isInfoEnabled()) {
                 log.info("Start processing joining chat request...");
@@ -123,7 +123,7 @@ public class ChatController {
     }
 
     private void leaveChat() {
-        handlerRegistry.registerHandler(new RequestContext(LEAVE_CHAT_URL, POST_METHOD), request -> {
+        handlerRegistry.registerHandler(new RequestContext(LEAVE_CHAT_URL, POST_METHOD), (request, response) -> {
 
             if (log.isInfoEnabled()) {
                 log.info("Start processing leaving chat request...");
@@ -160,7 +160,7 @@ public class ChatController {
     }
 
     private void addMessage() {
-        handlerRegistry.registerHandler(new RequestContext(ADD_MESSAGE_URL, POST_METHOD), request -> {
+        handlerRegistry.registerHandler(new RequestContext(ADD_MESSAGE_URL, POST_METHOD), (request, response) -> {
 
             if (log.isInfoEnabled()) {
                 log.info("Start processing adding message request...");

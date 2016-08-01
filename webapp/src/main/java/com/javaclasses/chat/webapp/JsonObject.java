@@ -42,7 +42,6 @@ public class JsonObject {
         builder.append("{");
 
         for (Map.Entry<String, String> entry : jsonObject.entrySet()) {
-            builder.append("\n");
             builder.append("'").append(entry.getKey()).append("':'").append(entry.getValue()).append("',");
         }
 
@@ -50,7 +49,7 @@ public class JsonObject {
             builder.setLength(builder.length() - 1);
         }
 
-        builder.append("\n").append("}");
+        builder.append("}");
 
         return builder.toString();
     }

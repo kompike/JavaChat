@@ -35,7 +35,7 @@ public class UserController {
     }
 
     private void loginUser() {
-        handlerRegistry.registerHandler(new RequestContext(LOGIN_URL, POST_METHOD), request -> {
+        handlerRegistry.registerHandler(new RequestContext(LOGIN_URL, POST_METHOD), (request, response) -> {
 
             if (log.isInfoEnabled()) {
                 log.info("Start processing login request...");
@@ -55,6 +55,7 @@ public class UserController {
                 jsonObject.add(MESSAGE_PARAMETER, "User successfully logged in");
                 jsonObject.setResponseStatusCode(SC_OK);
             } catch (UserAuthenticationException e) {
+                System.out.println(e.getMessage());
                 jsonObject.add(ERROR_MESSAGE_PARAMETER, e.getMessage());
                 jsonObject.setResponseStatusCode(SC_INTERNAL_SERVER_ERROR);
             }
@@ -71,7 +72,7 @@ public class UserController {
     }
 
     private void registerUser() {
-        handlerRegistry.registerHandler(new RequestContext(USER_REGISTRATION_URL, POST_METHOD), request -> {
+        handlerRegistry.registerHandler(new RequestContext(USER_REGISTRATION_URL, POST_METHOD), (request, response) -> {
 
             if (log.isInfoEnabled()) {
                 log.info("Start processing registration request...");
