@@ -2,21 +2,20 @@ package com.javaclasses.chat.model.service.impl;
 
 import com.javaclasses.chat.model.dto.ChatDTO;
 import com.javaclasses.chat.model.dto.MessageDTO;
-import com.javaclasses.chat.model.dto.UserDTO;
 import com.javaclasses.chat.model.entity.Chat;
 import com.javaclasses.chat.model.entity.Message;
-import com.javaclasses.chat.model.entity.User;
 import com.javaclasses.chat.model.entity.tinytype.ChatId;
 import com.javaclasses.chat.model.entity.tinytype.ChatName;
 import com.javaclasses.chat.model.entity.tinytype.TextColor;
 import com.javaclasses.chat.model.entity.tinytype.UserId;
 import com.javaclasses.chat.model.repository.impl.ChatRepository;
-import com.javaclasses.chat.model.repository.impl.UserRepository;
 import com.javaclasses.chat.model.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.javaclasses.chat.model.service.ErrorMessage.*;
@@ -32,8 +31,6 @@ public class ChatServiceImpl implements ChatService {
 
     private final ChatRepository chatRepository =
             ChatRepository.getInstance();
-    private final UserRepository userRepository =
-            UserRepository.getInstance();
 
     private ChatServiceImpl() {
     }
@@ -65,7 +62,7 @@ public class ChatServiceImpl implements ChatService {
                 log.warn(CHAT_ALREADY_EXISTS.toString());
             }
 
-            throw new ChatCreationException(CHAT_ALREADY_EXISTS.toString());
+            throw new ChatCreationException(CHAT_ALREADY_EXISTS);
         }
 
         if (createdChatName.isEmpty()) {
@@ -74,7 +71,7 @@ public class ChatServiceImpl implements ChatService {
                 log.warn(CHAT_NAME_CANNOT_BE_EMPTY.toString());
             }
 
-            throw new ChatCreationException(CHAT_NAME_CANNOT_BE_EMPTY.toString());
+            throw new ChatCreationException(CHAT_NAME_CANNOT_BE_EMPTY);
         }
 
         final Chat chat = new Chat(chatName, userId);
@@ -91,12 +88,12 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public ChatDTO joinChat(UserId userId, ChatId chatId)
-            throws ChatJoiningException {
+            throws ChatMembershipException {
 
         final Chat chat = chatRepository.findById(chatId);
 
         if (!chat.addUser(userId)) {
-            throw new ChatJoiningException(USER_ALREADY_JOINED.toString());
+            throw new ChatMembershipException(USER_ALREADY_JOINED);
         }
 
         return createChatDTOFromChat(chat);
@@ -104,12 +101,12 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public ChatDTO leaveChat(UserId userId, ChatId chatId)
-            throws ChatLeavingException {
+            throws ChatMembershipException {
 
         final Chat chat = chatRepository.findById(chatId);
 
         if (!chat.removeUser(userId)) {
-            throw new ChatLeavingException(USER_ALREADY_LEFT.toString());
+            throw new ChatMembershipException(USER_ALREADY_LEFT);
         }
 
         return createChatDTOFromChat(chat);
@@ -181,25 +178,16 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public Collection<UserDTO> getChatUsers(ChatId chatId) {
+    public Collection<UserId> getChatUsers(ChatId chatId) {
 
         if (log.isInfoEnabled()) {
             log.info("Start looking for all users of chat with id: " + chatId);
         }
 
         final Chat chat = chatRepository.findById(chatId);
-        final Set<UserId> chatUsers = chat.getUsers();
-
-        final Collection<UserDTO> users = new ArrayList<>();
-
-        for (UserId userId : chatUsers) {
-            final User user = userRepository.findById(userId);
-            users.add(new UserDTO(user.getId(), user.getUserName().getName()));
-
-        }
 
         try {
-            return users;
+            return chat.getUsers();
         } finally {
 
             if (log.isInfoEnabled()) {
@@ -209,7 +197,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public MessageDTO addMessage(MessageDTO messageDTO)
+    public void addMessage(MessageDTO messageDTO)
             throws MessageCreationException {
 
         if (log.isInfoEnabled()) {
@@ -229,7 +217,7 @@ public class ChatServiceImpl implements ChatService {
                 log.warn(USER_IS_NOT_IN_CHAT.toString());
             }
 
-            throw new MessageCreationException(USER_IS_NOT_IN_CHAT.toString());
+            throw new MessageCreationException(USER_IS_NOT_IN_CHAT);
         }
 
         if (message.isEmpty()) {
@@ -238,18 +226,13 @@ public class ChatServiceImpl implements ChatService {
                 log.warn(NOT_ALLOWED_TO_POST_EMPTY_MESSAGE.toString());
             }
 
-            throw new MessageCreationException(NOT_ALLOWED_TO_POST_EMPTY_MESSAGE.toString());
+            throw new MessageCreationException(NOT_ALLOWED_TO_POST_EMPTY_MESSAGE);
         }
 
         chat.addMessage(new Message(message, userId, color));
 
-        try {
-            return new MessageDTO(message, userId, chatId, color);
-        } finally {
-
-            if (log.isInfoEnabled()) {
-                log.info("New message successfully added.");
-            }
+        if (log.isInfoEnabled()) {
+            log.info("New message successfully added.");
         }
     }
 
@@ -295,7 +278,7 @@ public class ChatServiceImpl implements ChatService {
         }
     }
 
-    private ChatDTO createChatDTOFromChat(Chat chat) {
+    private static ChatDTO createChatDTOFromChat(Chat chat) {
 
         final List<MessageDTO> messages = new ArrayList<>();
 

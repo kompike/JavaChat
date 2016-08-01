@@ -1,13 +1,13 @@
 package com.javaclasses.chat.model.service;
 
 /**
- * Custom exception for catching chat creation failures
+ * Custom exception for catching chat joining failures
  */
-public class ChatCreationException extends Exception {
+public class ChatMembershipException extends Exception {
 
     private final ErrorMessage errorMessage;
 
-    public ChatCreationException(ErrorMessage message) {
+    public ChatMembershipException(ErrorMessage message) {
         this.errorMessage = message;
     }
 

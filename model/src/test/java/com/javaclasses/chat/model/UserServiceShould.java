@@ -9,6 +9,7 @@ import com.javaclasses.chat.model.dto.LoginDTO;
 import com.javaclasses.chat.model.dto.TokenDTO;
 import com.javaclasses.chat.model.dto.UserDTO;
 import com.javaclasses.chat.model.service.UserRegistrationException;
+import com.javaclasses.chat.model.service.impl.ChatServiceImpl;
 import com.javaclasses.chat.model.service.impl.UserServiceImpl;
 import org.junit.Test;
 
@@ -27,13 +28,13 @@ import static org.junit.Assert.fail;
 
 public class UserServiceShould {
 
-    private UserService userService = UserServiceImpl.getInstance();
+    private UserService userService = UserServiceImpl.getInstance(ChatServiceImpl.getInstance());
+
+    private final String nickname = "User";
+    private final String password = "password";
 
     @Test
     public void allowToCreateNewUser() throws UserRegistrationException {
-
-        final String nickname = "User";
-        final String password = "password";
 
         final UserId userId = userService.register(new RegistrationDTO(nickname, password, password));
         final UserDTO userDTO = userService.findById(userId);
@@ -46,8 +47,6 @@ public class UserServiceShould {
 
     @Test
     public void prohibitRegistrationOfAlreadyExistingUser() throws UserRegistrationException {
-        final String nickname = "ExistingUser";
-        final String password = "password";
 
         final UserId userId = userService.register(new RegistrationDTO(nickname, password, password));
         final UserDTO userDTO = userService.findById(userId);
@@ -67,9 +66,8 @@ public class UserServiceShould {
     }
 
     @Test
-    public void checkForGapsInNickname() {
+    public void prohibitRegistrationOfUserWithGapsInNickname() {
         final String nickname = "New  user";
-        final String password = "password";
 
         try {
             userService.register(new RegistrationDTO(nickname, password, password));
@@ -81,9 +79,7 @@ public class UserServiceShould {
     }
 
     @Test
-    public void checkPasswordEquality() {
-        final String nickname = "UserWithWrongPass";
-        final String password = "password";
+    public void prohibitRegistrationOfUserWithDifferentPasswords() {
         final String confirmPassword = "pass";
 
         try {
@@ -96,9 +92,8 @@ public class UserServiceShould {
     }
 
     @Test
-    public void checkForEmptyFieldsWhileRegisteringNewUser() {
+    public void prohibitRegistrationOfUserWithEmptyFields() {
         final String nickname = "";
-        final String password = "password";
 
         try {
             userService.register(new RegistrationDTO(nickname, password, password));
@@ -112,7 +107,6 @@ public class UserServiceShould {
     @Test
     public void trimNicknameWhileRegisteringNewUser() throws UserRegistrationException {
         final String nickname = "UserWithWhitespaces";
-        final String password = "password";
 
         final UserId userId = userService.register(new RegistrationDTO(nickname, password, password));
         final UserDTO userDTO = userService.findById(userId);
@@ -133,10 +127,7 @@ public class UserServiceShould {
     }
 
     @Test
-    public void findUserByName() throws UserRegistrationException {
-
-        final String nickname = "User";
-        final String password = "password";
+    public void allowToFindUserByName() throws UserRegistrationException {
 
         final UserId userId = userService.register(new RegistrationDTO(nickname, password, password));
         final UserDTO userDTO = userService.findByName(new UserName(nickname));
@@ -149,9 +140,6 @@ public class UserServiceShould {
 
     @Test
     public void allowRegisteredUserToLogin() throws UserRegistrationException, UserAuthenticationException {
-
-        final String nickname = "Vasya";
-        final String password = "password";
 
         final UserId userId = userService.register(new RegistrationDTO(nickname, password, password));
         final UserDTO userDTO = userService.findById(userId);
@@ -171,9 +159,6 @@ public class UserServiceShould {
     @Test
     public void prohibitLoginOfNotRegisteredUser() {
 
-        final String nickname = "Fedya";
-        final String password = "password";
-
         try {
             userService.login(new LoginDTO(nickname, password));
             fail("Not registered user logged in.");
@@ -184,10 +169,7 @@ public class UserServiceShould {
     }
 
     @Test
-    public void checkPasswordCorrectness() throws UserRegistrationException {
-
-        final String nickname = "Misha";
-        final String password = "password";
+    public void prohibitLoginOfUserWithIncorrectPassword() throws UserRegistrationException {
 
         final UserId userId = userService.register(new RegistrationDTO(nickname, password, password));
         final UserDTO userDTO = userService.findById(userId);

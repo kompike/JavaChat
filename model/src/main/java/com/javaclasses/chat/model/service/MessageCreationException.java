@@ -5,7 +5,14 @@ package com.javaclasses.chat.model.service;
  */
 public class MessageCreationException extends Exception {
 
-    public MessageCreationException(String message) {
-        super(message);
+    private final ErrorMessage errorMessage;
+
+    public MessageCreationException(ErrorMessage message) {
+        this.errorMessage = message;
+    }
+
+    @Override
+    public String getMessage() {
+        return errorMessage.toString();
     }
 }

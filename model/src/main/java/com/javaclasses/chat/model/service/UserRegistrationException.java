@@ -5,7 +5,14 @@ package com.javaclasses.chat.model.service;
  */
 public class UserRegistrationException extends Exception {
 
-    public UserRegistrationException(String message) {
-        super(message);
+    private final ErrorMessage errorMessage;
+
+    public UserRegistrationException(ErrorMessage message) {
+        this.errorMessage = message;
+    }
+
+    @Override
+    public String getMessage() {
+        return errorMessage.toString();
     }
 }

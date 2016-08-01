@@ -19,13 +19,18 @@ import static org.junit.Assert.fail;
 public class ChatServiceShould {
 
     private final ChatService chatService = ChatServiceImpl.getInstance();
-    private UserService userService = UserServiceImpl.getInstance();
+    private UserService userService = UserServiceImpl.getInstance(chatService);
+
+    private final String chatName = "NewChat";
+    private final UserId userId = new UserId(1);
+    private final String nickname = "User";
+    private final String password = "password";
+
+    private final String messageText = "New message!!!";
+    private final String color = "#000";
 
     @Test
     public void allowToCreateNewChat() throws ChatCreationException {
-
-        final String chatName = "NewChat";
-        final UserId userId = new UserId(1);
 
         final ChatId chatId = chatService.createChat(userId, new ChatName(chatName));
         final ChatDTO chatDTO = chatService.findById(chatId);
@@ -38,9 +43,6 @@ public class ChatServiceShould {
 
     @Test
     public void prohibitCreationOfAlreadyExistingChat() throws ChatCreationException {
-
-        final String chatName = "NewChat";
-        final UserId userId = new UserId(1);
 
         final ChatId chatId = chatService.createChat(userId, new ChatName(chatName));
         final ChatDTO chatDTO = chatService.findById(chatId);
@@ -60,10 +62,9 @@ public class ChatServiceShould {
     }
 
     @Test
-    public void checkForEmptyChatNameWhileCreatingNewChat() {
+    public void prohibitCreationOfChatWithEmptyName() {
 
         final String chatName = "";
-        final UserId userId = new UserId(1);
 
         try {
             chatService.createChat(userId, new ChatName(chatName));
@@ -78,7 +79,6 @@ public class ChatServiceShould {
     public void trimChatNameWhileCreatingNewChat() throws ChatCreationException {
 
         final String chatName = "ChatWithWhitespaces";
-        final UserId userId = new UserId(1);
 
         final ChatName createdChatName = new ChatName(chatName);
         final ChatId chatId = chatService.createChat(userId, createdChatName);
@@ -100,11 +100,7 @@ public class ChatServiceShould {
 
     @Test
     public void allowUserToJoinChat()
-            throws UserRegistrationException, ChatCreationException, ChatJoiningException {
-
-        final String chatName = "NewChat";
-        final String nickname = "User";
-        final String password = "password";
+            throws UserRegistrationException, ChatCreationException, ChatMembershipException {
 
         final UserId userId = userService.register(new RegistrationDTO(nickname, password, password));
 
@@ -120,11 +116,7 @@ public class ChatServiceShould {
 
     @Test
     public void prohibitUserToJoinChatHeAlreadyJoined()
-            throws ChatJoiningException, ChatCreationException, UserRegistrationException {
-
-        final String chatName = "NewChat";
-        final String nickname = "User";
-        final String password = "password";
+            throws ChatMembershipException, ChatCreationException, UserRegistrationException {
 
         final UserId userId = userService.register(new RegistrationDTO(nickname, password, password));
 
@@ -137,7 +129,7 @@ public class ChatServiceShould {
         try {
             chatService.joinChat(userId, chatId);
             fail("User joined the chat he already joined.");
-        } catch (ChatJoiningException ex) {
+        } catch (ChatMembershipException ex) {
             assertEquals("Wrong message for joining chat which user already joined.",
                     USER_ALREADY_JOINED.toString(), ex.getMessage());
 
@@ -148,11 +140,7 @@ public class ChatServiceShould {
 
     @Test
     public void allowUserToLeaveChat()
-            throws UserRegistrationException, ChatCreationException, ChatJoiningException, ChatLeavingException {
-
-        final String chatName = "NewChat";
-        final String nickname = "User";
-        final String password = "password";
+            throws UserRegistrationException, ChatCreationException, ChatMembershipException {
 
         final UserId userId = userService.register(new RegistrationDTO(nickname, password, password));
 
@@ -169,16 +157,11 @@ public class ChatServiceShould {
 
         chatService.delete(chatId);
         userService.delete(userId);
-
     }
 
     @Test
     public void prohibitUserToLeaveChatHeAlreadyLeft()
-            throws UserRegistrationException, ChatCreationException, ChatJoiningException, ChatLeavingException {
-
-        final String chatName = "NewChat";
-        final String nickname = "User";
-        final String password = "password";
+            throws UserRegistrationException, ChatCreationException, ChatMembershipException {
 
         final UserId userId = userService.register(new RegistrationDTO(nickname, password, password));
 
@@ -196,7 +179,7 @@ public class ChatServiceShould {
         try {
             chatService.leaveChat(userId, chatId);
             fail("User left the chat he already left.");
-        } catch (ChatLeavingException ex) {
+        } catch (ChatMembershipException ex) {
             assertEquals("Wrong message for leaving chat which user already left.",
                     USER_ALREADY_LEFT.toString(), ex.getMessage());
 
@@ -208,11 +191,7 @@ public class ChatServiceShould {
     @Test
     public void allowUserToPostNewMessage()
             throws UserRegistrationException, ChatCreationException,
-            ChatJoiningException, MessageCreationException {
-
-        final String chatName = "NewChat";
-        final String nickname = "User";
-        final String password = "password";
+            ChatMembershipException, MessageCreationException {
 
         final UserId userId = userService.register(new RegistrationDTO(nickname, password, password));
 
@@ -222,7 +201,8 @@ public class ChatServiceShould {
         assertEquals("User did not join the chat.",
                 1, chatService.getChatUsers(chatId).size());
 
-        final MessageDTO messageDTO = new MessageDTO("New message!!!", userId, chatId, new TextColor("#000"));
+        final MessageDTO messageDTO = new MessageDTO(messageText,
+                userId, chatId, new TextColor(color));
 
         chatService.addMessage(messageDTO);
 
@@ -235,17 +215,14 @@ public class ChatServiceShould {
 
     @Test
     public void prohibitUserToAddMessageWithoutJoiningChat()
-            throws ChatJoiningException, ChatCreationException, UserRegistrationException {
-
-        final String chatName = "NewChat";
-        final String nickname = "User";
-        final String password = "password";
+            throws ChatMembershipException, ChatCreationException, UserRegistrationException {
 
         final UserId userId = userService.register(new RegistrationDTO(nickname, password, password));
         final ChatId chatId = chatService.createChat(userId, new ChatName(chatName));
 
         try {
-            final MessageDTO messageDTO = new MessageDTO("New message!!!", userId, chatId, new TextColor("#000"));
+            final MessageDTO messageDTO = new MessageDTO(messageText,
+                    userId, chatId, new TextColor(color));
             chatService.addMessage(messageDTO);
             fail("Message was added to chat.");
         } catch (MessageCreationException ex) {
@@ -259,18 +236,15 @@ public class ChatServiceShould {
 
     @Test
     public void prohibitUserToPostEmptyMessage()
-            throws ChatJoiningException, ChatCreationException, UserRegistrationException {
-
-        final String chatName = "NewChat";
-        final String nickname = "User";
-        final String password = "password";
+            throws ChatMembershipException, ChatCreationException, UserRegistrationException {
 
         final UserId userId = userService.register(new RegistrationDTO(nickname, password, password));
         final ChatId chatId = chatService.createChat(userId, new ChatName(chatName));
         chatService.joinChat(userId, chatId);
 
         try {
-            final MessageDTO messageDTO = new MessageDTO("", userId, chatId, new TextColor("#000"));
+            final MessageDTO messageDTO = new MessageDTO("",
+                    userId, chatId, new TextColor("#000"));
             chatService.addMessage(messageDTO);
             fail("Message was added to chat.");
         } catch (MessageCreationException ex) {

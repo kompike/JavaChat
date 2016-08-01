@@ -1,20 +1,12 @@
 package com.javaclasses.chat.model.service.impl;
 
-import com.javaclasses.chat.model.dto.LoginDTO;
-import com.javaclasses.chat.model.dto.RegistrationDTO;
-import com.javaclasses.chat.model.dto.TokenDTO;
-import com.javaclasses.chat.model.dto.UserDTO;
+import com.javaclasses.chat.model.dto.*;
 import com.javaclasses.chat.model.entity.Token;
 import com.javaclasses.chat.model.entity.User;
-import com.javaclasses.chat.model.entity.tinytype.Password;
-import com.javaclasses.chat.model.entity.tinytype.TokenId;
-import com.javaclasses.chat.model.entity.tinytype.UserId;
-import com.javaclasses.chat.model.entity.tinytype.UserName;
+import com.javaclasses.chat.model.entity.tinytype.*;
 import com.javaclasses.chat.model.repository.impl.TokenRepository;
 import com.javaclasses.chat.model.repository.impl.UserRepository;
-import com.javaclasses.chat.model.service.UserAuthenticationException;
-import com.javaclasses.chat.model.service.UserRegistrationException;
-import com.javaclasses.chat.model.service.UserService;
+import com.javaclasses.chat.model.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,18 +24,20 @@ public class UserServiceImpl implements UserService {
     private final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     private static UserServiceImpl userService;
+    private final ChatService chatService;
 
     private final UserRepository userRepository =
             UserRepository.getInstance();
     private final TokenRepository tokenRepository =
             TokenRepository.getInstance();
 
-    private UserServiceImpl() {
+    private UserServiceImpl(ChatService chatService) {
+        this.chatService = chatService;
     }
 
-    public static UserServiceImpl getInstance() {
+    public static UserServiceImpl getInstance(ChatService chatService) {
         if (userService == null) {
-            userService = new UserServiceImpl();
+            userService = new UserServiceImpl(chatService);
         }
 
         return userService;
@@ -71,7 +65,7 @@ public class UserServiceImpl implements UserService {
                 log.warn(USER_ALREADY_EXISTS.toString());
             }
 
-            throw new UserRegistrationException(USER_ALREADY_EXISTS.toString());
+            throw new UserRegistrationException(USER_ALREADY_EXISTS);
         }
         if (userName.contains(" ")) {
 
@@ -79,7 +73,7 @@ public class UserServiceImpl implements UserService {
                 log.warn(NICKNAME_CANNOT_CONTAIN_GAPS.toString());
             }
 
-            throw new UserRegistrationException(NICKNAME_CANNOT_CONTAIN_GAPS.toString());
+            throw new UserRegistrationException(NICKNAME_CANNOT_CONTAIN_GAPS);
         }
         if (userName.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
 
@@ -87,7 +81,7 @@ public class UserServiceImpl implements UserService {
                 log.warn(ALL_FIELDS_MUST_BE_FILLED.toString());
             }
 
-            throw new UserRegistrationException(ALL_FIELDS_MUST_BE_FILLED.toString());
+            throw new UserRegistrationException(ALL_FIELDS_MUST_BE_FILLED);
         }
         if (!password.equals(confirmPassword)){
 
@@ -95,7 +89,7 @@ public class UserServiceImpl implements UserService {
                 log.warn(PASSWORDS_DOES_NOT_MATCH.toString());
             }
 
-            throw new UserRegistrationException(PASSWORDS_DOES_NOT_MATCH.toString());
+            throw new UserRegistrationException(PASSWORDS_DOES_NOT_MATCH);
         }
 
         final User user = new User(new UserName(userName), new Password(password));
@@ -133,7 +127,7 @@ public class UserServiceImpl implements UserService {
                 log.warn(INCORRECT_CREDENTIALS.toString());
             }
 
-            throw new UserAuthenticationException(INCORRECT_CREDENTIALS.toString());
+            throw new UserAuthenticationException(INCORRECT_CREDENTIALS);
         }
         if (!user.getPassword().getPassword().equals(password)) {
 
@@ -141,7 +135,7 @@ public class UserServiceImpl implements UserService {
                 log.warn(INCORRECT_CREDENTIALS.toString());
             }
 
-            throw new UserAuthenticationException(INCORRECT_CREDENTIALS.toString());
+            throw new UserAuthenticationException(INCORRECT_CREDENTIALS);
         }
 
         final Token token = new Token(user.getId());
@@ -259,6 +253,22 @@ public class UserServiceImpl implements UserService {
             log.info("Start deleting user with id: " + userId.getId());
         }
 
+        final Collection<ChatDTO> chats = chatService.findAll();
+
+        for (ChatDTO chat : chats) {
+            final ChatId chatId = chat.getChatId();
+
+            if (chat.getOwner().equals(userId)) {
+                chatService.delete(chatId);
+            } else if (chatService.getChatUsers(chatId).contains(userId)) {
+                try {
+                    chatService.leaveChat(userId, chatId);
+                } catch (ChatMembershipException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
         userRepository.delete(userId);
 
         if (log.isInfoEnabled()) {
@@ -266,7 +276,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private UserDTO createUserDTOFromUser(User user) {
+    private static UserDTO createUserDTOFromUser(User user) {
 
         return new UserDTO(user.getId(), user.getUserName().getName());
     }

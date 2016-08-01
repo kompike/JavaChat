@@ -5,7 +5,14 @@ package com.javaclasses.chat.model.service;
  */
 public class UserAuthenticationException extends Exception {
 
-    public UserAuthenticationException(String message) {
-        super(message);
+    private final ErrorMessage errorMessage;
+
+    public UserAuthenticationException(ErrorMessage errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+    @Override
+    public String getMessage() {
+        return errorMessage.toString();
     }
 }
