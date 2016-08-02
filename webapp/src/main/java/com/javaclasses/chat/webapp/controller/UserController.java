@@ -52,10 +52,8 @@ public class UserController {
                 final TokenDTO tokenDTO = userService.login(loginDTO);
                 jsonObject.add(TOKEN_ID_PARAMETER, tokenDTO.getTokenId().toString());
                 jsonObject.add(USER_NAME_PARAMETER, nickname);
-                jsonObject.add(MESSAGE_PARAMETER, "User successfully logged in");
                 jsonObject.setResponseStatusCode(SC_OK);
             } catch (UserAuthenticationException e) {
-                System.out.println(e.getMessage());
                 jsonObject.add(ERROR_MESSAGE_PARAMETER, e.getMessage());
                 jsonObject.setResponseStatusCode(SC_INTERNAL_SERVER_ERROR);
             }

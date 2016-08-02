@@ -42,7 +42,12 @@ public class JsonObject {
         builder.append("{");
 
         for (Map.Entry<String, String> entry : jsonObject.entrySet()) {
-            builder.append("'").append(entry.getKey()).append("':'").append(entry.getValue()).append("',");
+            builder.append("'").append(entry.getKey());
+            if (entry.getValue().startsWith("[")) {
+                builder.append("':").append(entry.getValue()).append(",");
+            } else {
+                builder.append("':'").append(entry.getValue()).append("',");
+            }
         }
 
         if (builder.length() > 1) {

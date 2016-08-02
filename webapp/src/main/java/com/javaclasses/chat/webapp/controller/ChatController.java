@@ -64,6 +64,7 @@ public class ChatController {
                 final String chats = getChatList();
 
                 jsonObject.add(CHAT_LIST_PARAMETER, chats);
+                jsonObject.add(MESSAGE_PARAMETER, "Chat successfully created");
                 jsonObject.setResponseStatusCode(SC_OK);
 
             } catch (ChatCreationException e) {
@@ -178,9 +179,9 @@ public class ChatController {
             final String requestMessage = request.getParameter(MESSAGE_PARAMETER);
             final String messageColor = request.getParameter(COLOR_PARAMETER);
             final ChatDTO chat = chatService.findByName(new ChatName(requestChatName));
+            final ChatId chatId = chat.getChatId();
 
             try {
-                final ChatId chatId = chat.getChatId();
                 final MessageDTO messageDTO =
                         new MessageDTO(requestMessage, user.getUserId(),
                                 chatId, new TextColor(messageColor));
@@ -190,6 +191,7 @@ public class ChatController {
                 jsonObject.add(MESSAGES_PARAMETER, messages);
                 jsonObject.setResponseStatusCode(SC_OK);
             } catch (MessageCreationException e) {
+                jsonObject.add(CHAT_ID_PARAMETER, chatId.toString());
                 jsonObject.add(ERROR_MESSAGE_PARAMETER, e.getMessage());
                 jsonObject.setResponseStatusCode(SC_INTERNAL_SERVER_ERROR);
             }
@@ -251,6 +253,7 @@ public class ChatController {
             final JsonObject chatJson = new JsonObject();
             final String author = userService.findById(messageDTO.getAuthor()).getUserName();
             chatJson.add(MESSAGE_PARAMETER, messageDTO.getMessage());
+            chatJson.add(COLOR_PARAMETER, messageDTO.getColor().toString());
             chatJson.add(AUTHOR_PARAMETER, author);
             builder.append(chatJson.generateJson()).append(",");
         }

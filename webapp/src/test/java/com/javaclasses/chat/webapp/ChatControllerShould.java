@@ -244,8 +244,8 @@ public class ChatControllerShould {
 
         final String addMessageResponseContent = getResponseContent(httpEntity);
 
-        assertEquals("Not joined user posted message.",
-                "{'errorMessage':'" + USER_IS_NOT_IN_CHAT + "'}", addMessageResponseContent);
+        assertTrue("Not joined user posted message.",
+                addMessageResponseContent.contains(USER_IS_NOT_IN_CHAT.toString()));
     }
 
     @Test
@@ -269,7 +269,7 @@ public class ChatControllerShould {
 
         final String addMessageResponseContent = getResponseContent(httpEntity);
 
-        assertEquals("Empty message was posted.",
-                "{'errorMessage':'" + NOT_ALLOWED_TO_POST_EMPTY_MESSAGE + "'}", addMessageResponseContent);
+        assertTrue("Not joined user posted message.",
+                addMessageResponseContent.contains(NOT_ALLOWED_TO_POST_EMPTY_MESSAGE.toString()));
     }
 }

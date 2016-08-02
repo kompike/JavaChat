@@ -8,24 +8,18 @@ var UserService = function(eventBus, serverURL) {
 		var name = user.nickname;
 		var pass = user.password;
 		var confirmPass = user.repeatPassword;
-        $.ajax({
-			url: serverURL + "api/register",
-			method: 'POST',
-			data: {
-				nickname: name,
-				password: pass,
-				confirmPassword: confirmPass
-			},
-			statusCode: {
-				200: function(data) {
-					eventBus.post(Events.USER_REGISTERED, data);
-				},
-				500: function(xhr, status, error) {
-                    var err = eval("(" + xhr.responseText + ")");
-					eventBus.post(Events.REGISTRATION_FAILED, err.errorMessage);
-				}
-			}
-		});
+        $.post(serverURL + "api/register",{
+                nickname: name,
+                password: pass,
+                confirmPassword: confirmPass
+            }, function(xhr) {
+                var data = eval("(" + xhr + ")");
+                eventBus.post(Events.USER_REGISTERED, data.message);
+            }, 'text')
+            .fail(function(xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                eventBus.post(Events.REGISTRATION_FAILED, err.errorMessage);
+            });
 	};
 		
 	var _onUserAdded = function(user) {
@@ -35,24 +29,20 @@ var UserService = function(eventBus, serverURL) {
 	var _loginUser = function(user) {
 		var name = user.nickname;
 		var pass = user.password;
-		$.ajax({
-			url: serverURL + "api/login",
-			method: 'POST',
-			data: {
-				nickname: name,
-				password: pass
-			},
-			dataType: 'json',
-			statusCode: {
-				200: function(data) {
-					eventBus.post(Events.LOGIN_SUCCESSFULL, data);
-				},
-                500: function(xhr, status, error) {
-                    var err = eval("(" + xhr.responseText + ")");
-					eventBus.post(Events.LOGIN_FAILED, err.errorMessage);
-				}
-			}
-		});		
+        $.post(
+            serverURL + "api/login",
+            {
+                nickname: name,
+                password: pass
+            },
+            function(xhr) {
+                var data = eval("(" + xhr + ")");
+                eventBus.post(Events.LOGIN_SUCCESSFULL, data);
+            }, 'text')
+            .fail(function(xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                eventBus.post(Events.LOGIN_FAILED, err.errorMessage);
+            });
 	};
 		
 	var _onUserLogin = function(user) {
