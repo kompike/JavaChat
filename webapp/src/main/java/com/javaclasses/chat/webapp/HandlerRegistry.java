@@ -9,12 +9,41 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
+import static javax.ws.rs.HttpMethod.POST;
+
 /**
  * Registry of all possible handlers
  */
 public class HandlerRegistry  {
 
     private final Logger log = LoggerFactory.getLogger(HandlerRegistry.class);
+
+    // Possible URLs
+    public static final String LOGIN_URL = "/api/login";
+    public static final String USER_REGISTRATION_URL = "/api/register";
+    public static final String CREATE_CHAT_URL = "/api/chats";
+    public static final String JOIN_CHAT_URL = "/api/membership/join";
+    public static final String LEAVE_CHAT_URL = "/api/membership/leave";
+    public static final String ADD_MESSAGE_URL = "/api/messages";
+
+    // Possible request methods
+    public static final String POST_METHOD = POST;
+
+    // Request parameter names
+    public static final String NICKNAME_PARAMETER = "nickname";
+    public static final String PASSWORD_PARAMETER = "password";
+    public static final String CONFIRM_PASSWORD_PARAMETER = "confirmPassword";
+    public static final String USER_NAME_PARAMETER = "userName";
+    public static final String CHAT_NAME_PARAMETER = "chatName";
+    public static final String ERROR_MESSAGE_PARAMETER = "errorMessage";
+    public static final String CHAT_LIST_PARAMETER = "chatList";
+    public static final String USER_CHATS_PARAMETER = "userChats";
+    public static final String CHAT_ID_PARAMETER = "chatId";
+    public static final String MESSAGES_PARAMETER = "messages";
+    public static final String MESSAGE_PARAMETER = "message";
+    public static final String COLOR_PARAMETER = "color";
+    public static final String TOKEN_ID_PARAMETER = "tokenId";
+    public static final String AUTHOR_PARAMETER = "author";
 
     private static HandlerRegistry handlerRegistry;
 

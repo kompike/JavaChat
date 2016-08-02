@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+
 /**
  * Dispatcher servlet which handles all user's requests
  */
@@ -39,13 +41,13 @@ public class DispatcherServlet extends HttpServlet {
         }
 
         final String uri = request.getRequestURI();
-        final String method = request.getMethod().toLowerCase();
+        final String method = request.getMethod().toUpperCase();
         final RequestContext requestContext = new RequestContext(uri, method);
 
         final Handler handler = registry.getHandler(requestContext);
         final JsonObject jsonObject = handler.process(request, response);
         final PrintWriter printWriter = response.getWriter();
-        response.setContentType("application/json");
+        response.setContentType(APPLICATION_JSON);
         printWriter.write(jsonObject.generateJson());
 
         if (log.isInfoEnabled()) {

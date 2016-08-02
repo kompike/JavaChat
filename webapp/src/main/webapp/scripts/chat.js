@@ -1,8 +1,6 @@
 var Chat = function(chatDivId, eventBus, userService, chatService) {
 	
 	var _initChat = function() {
-
-		localStorage.clear();
 		
 		var registrationDivId = chatDivId + '_register';
 		var userPageDivId = chatDivId + '_room';
@@ -67,12 +65,14 @@ var Chat = function(chatDivId, eventBus, userService, chatService) {
 						'repeatPassword' : $('#' + _rootDivId + '_repeat_password').val()
 					};		
 					eventBus.post(Events.NEW_USER_ADDITION, user);			
-				})))
+				})));
+			
+			$('#' + _rootDivId + '_nickname').focus();
 				
 			_onInputFieldEvent('input');
 		};
 		
-		var _onUserRegistered = function(message) {			
+		var _onUserRegistered = function() {			
 			$('#' + chatDivId + '_register').remove();
 		}
 		
@@ -104,7 +104,7 @@ var Chat = function(chatDivId, eventBus, userService, chatService) {
 			$('#' + _rootDivId).html($('<div/>').attr('id', _rootDivId + '_box')
 				.append($('<h5/>').html('Login form'))
 				.append($('<label/>').attr('for', 'nickname').text('Nickname'))
-				.append($('<input/>').attr({'id': _rootDivId + '_nickname', 'name' : 'nickname', 'type':'text'})).append('<br/>')
+				.append($('<input/>').attr({'id': _rootDivId + '_nickname', 'name' : 'nickname', 'type':'text'}).focus()).append('<br/>')
 				.append($('<label/>').attr('for', 'password').text('Password'))
 				.append($('<input/>').attr({'id': _rootDivId + '_password', 'name' : 'password', 'type':'password'})).append('<br/>')
 				.append($('<div/>').attr('id', errorDivId)).append('<br/>')
@@ -114,7 +114,8 @@ var Chat = function(chatDivId, eventBus, userService, chatService) {
 						'password' : $('#' + _rootDivId + '_password').val()
 					};				
 					eventBus.post(Events.LOGIN_ATTEMPT, user);			
-				})))
+				})));
+			$('#' + _rootDivId + '_nickname').focus();
 				
 			_onInputFieldEvent('input');		
 		};
@@ -154,7 +155,7 @@ var Chat = function(chatDivId, eventBus, userService, chatService) {
 			
 			$('#' + _rootDivId + '_header')
 				.append($('<h5/>').html('Hello ' + localStorage.getItem("currentUser") + '!)'))
-				.append($('<input/>').attr({'id': _rootDivId + '_chatName', 'name' : '_chatName', 'type':'text', 'placeholder':'Enter chat name...'}))
+				.append($('<input/>').attr({'id': _rootDivId + '_chatName', 'name' : '_chatName', 'type':'text', 'placeholder':'Enter chat name...'}).focus())
 				.append($('<button/>').attr({'id': _rootDivId + '_add_chat', 'class' : 'add_chat'}).text('Add new chat').click(function(){
 					var chatName = $('#' + _rootDivId + '_chatName').val();
 					var chat = {
@@ -166,9 +167,12 @@ var Chat = function(chatDivId, eventBus, userService, chatService) {
 				.append($('<div/>').attr('id', _rootDivId + '_box_err'))
 				.append($('<div/>').attr('id', _rootDivId + '_box_success'))
 				.append($('<div/>').attr('id', _rootDivId + '_drop'));
+			
+			$('#' + _rootDivId + '_chatName').focus();
 				
-			_onInputFieldEvent('#' + _rootDivId + '_chatName');	
-			_initChatList(chatInfo.chatList);
+			_onInputFieldEvent('#' + _rootDivId + '_chatName');
+			eventBus.post(Events.CHAT_LIST_UPDATED, chatInfo.chatList);
+			_openChats(chatInfo.userChats);
 		}
 		
 		var _initChatList = function(chatList) {
@@ -189,6 +193,12 @@ var Chat = function(chatDivId, eventBus, userService, chatService) {
 					}))
 			}			
 		}
+		
+		var _openChats = function(userChatList) {			
+			for (var i = 0; i < userChatList.length; i++) {
+				_onUserJoined(userChatList[i]);
+			}
+		};
 		
 		var _onChatListUpdated = function(chatList) {
 			_initChatList(chatList);
@@ -250,7 +260,7 @@ var Chat = function(chatDivId, eventBus, userService, chatService) {
 					.append($('<div/>').attr({'id': chatDivId + '_body', 'class':'chat_body'}))
 					.append($('<div/>').attr('id', chatDivId + '_message_err'))
 					.append($('<input/>').attr({'id': chatDivId + '_input', 'class': 'message_text', 'type' : 'text', 'placeholder' : 'Type here!'})
-						.css({'color' : '#000'}))
+						.css({'color' : '#000'}).focus())
 					.append($('<input/>').attr({'id': 'colorpicker_' + chatDivId}))
 					.append($('<button/>').attr({'id': chatDivId + '_send', 'class' : 'send_message'}).text('Send').click(function(){
 						var messageInfo = {

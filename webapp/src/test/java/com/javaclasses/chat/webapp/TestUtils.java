@@ -29,10 +29,10 @@ import static org.apache.http.HttpHeaders.USER_AGENT;
     private static final String URL = "http://localhost:8080/api/";
     private static final String REGISTRATION_URL = URL + "register";
     private static final String LOGIN_URL = URL + "login";
-    private static final String CHAT_CREATION_URL = URL + "chat/create";
-    private static final String JOIN_CHAT_URL = URL + "chat/join";
-    private static final String LEAVE_CHAT_URL = URL + "chat/leave";
-    private static final String ADD_MESSAGE_URL = URL + "message/add";
+    private static final String CHAT_CREATION_URL = URL + "chats";
+    private static final String JOIN_CHAT_URL = URL + "membership/join";
+    private static final String LEAVE_CHAT_URL = URL + "membership/leave";
+    private static final String ADD_MESSAGE_URL = URL + "messages";
 
     // Parameter constants
     private static final String NICKNAME = "nickname";

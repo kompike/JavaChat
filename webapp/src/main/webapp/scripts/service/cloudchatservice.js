@@ -8,7 +8,7 @@ var ChatService = function(eventBus, serverURL) {
 		var name = chatData.chatName;
 		var tokenId = chatData.tokenId;
 		$.post(
-			serverURL + "api/chat/create",
+			serverURL + "api/chats",
 			{
 				chatName: name,
 				tokenId: tokenId
@@ -32,7 +32,7 @@ var ChatService = function(eventBus, serverURL) {
 		var name = chatData.chatName;
 		var tokenId = chatData.tokenId;
 		$.post(
-			serverURL + "api/chat/join",
+			serverURL + "api/membership/join",
 			{
 				chatName: name,
 				tokenId: tokenId
@@ -51,7 +51,7 @@ var ChatService = function(eventBus, serverURL) {
 		var name = chatData.chatName;
 		var tokenId = chatData.tokenId;
 		$.post(
-			serverURL + "api/chat/leave",
+			serverURL + "api/membership/leave",
 			{
 				chatName: name,
 				tokenId: tokenId
@@ -72,7 +72,7 @@ var ChatService = function(eventBus, serverURL) {
 		var chatName = messageData.chatName;
 		var color = messageData.color;
 		$.post(
-			serverURL + "api/message/add",
+			serverURL + "api/messages",
 			{
 				message: message,
 				tokenId: tokenId,

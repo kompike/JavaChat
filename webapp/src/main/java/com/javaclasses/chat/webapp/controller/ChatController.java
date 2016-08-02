@@ -18,7 +18,7 @@ import com.javaclasses.chat.webapp.handler.RequestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.javaclasses.chat.webapp.controller.Constants.*;
+import static com.javaclasses.chat.webapp.HandlerRegistry.*;
 import static com.javaclasses.chat.webapp.controller.ControllerUtils.*;
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 import static javax.servlet.http.HttpServletResponse.SC_OK;

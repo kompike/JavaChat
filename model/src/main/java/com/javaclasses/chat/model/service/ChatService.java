@@ -28,6 +28,8 @@ public interface ChatService {
 
     ChatDTO findById(ChatId chatId);
 
+    Collection<ChatDTO> findChatsByUser(UserId userId);
+
     Collection<UserId> getChatUsers(ChatId chatId);
 
     void addMessage(MessageDTO messageDTO)

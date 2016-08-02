@@ -16,8 +16,9 @@ import com.javaclasses.chat.webapp.handler.RequestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.javaclasses.chat.webapp.controller.Constants.*;
+import static com.javaclasses.chat.webapp.HandlerRegistry.*;
 import static com.javaclasses.chat.webapp.controller.ControllerUtils.getChatList;
+import static com.javaclasses.chat.webapp.controller.ControllerUtils.getUserChatList;
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 
@@ -54,10 +55,12 @@ public class UserController {
             try {
                 final TokenDTO tokenDTO = userService.login(loginDTO);
                 final String chats = getChatList();
+                final String userChatList = getUserChatList(tokenDTO.getUserId());
 
                 jsonObject.add(TOKEN_ID_PARAMETER, tokenDTO.getTokenId().toString());
                 jsonObject.add(USER_NAME_PARAMETER, nickname);
                 jsonObject.add(CHAT_LIST_PARAMETER, chats);
+                jsonObject.add(USER_CHATS_PARAMETER, userChatList);
                 jsonObject.setResponseStatusCode(SC_OK);
             } catch (UserAuthenticationException e) {
                 jsonObject.add(ERROR_MESSAGE_PARAMETER, e.getMessage());
@@ -72,7 +75,6 @@ public class UserController {
                 }
             }
         });
-
     }
 
     private void registerUser() {

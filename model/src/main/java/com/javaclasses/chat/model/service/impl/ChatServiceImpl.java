@@ -178,6 +178,33 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    public Collection<ChatDTO> findChatsByUser(UserId userId) {
+
+        if (log.isInfoEnabled()) {
+            log.info("Start looking for chats by user: " + userId);
+        }
+
+        final Collection<Chat> chats = chatRepository.findAll();
+
+        final Collection<ChatDTO> chatDTOList = new ArrayList<>();
+
+        for (Chat chat : chats) {
+            if (chat.getUsers().contains(userId)) {
+                chatDTOList.add(createChatDTOFromChat(chat));
+            }
+        }
+
+        try {
+            return chatDTOList;
+        } finally {
+
+            if (log.isInfoEnabled()) {
+                log.info("Found " + chatDTOList.size() + " chats.");
+            }
+        }
+    }
+
+    @Override
     public Collection<UserId> getChatUsers(ChatId chatId) {
 
         if (log.isInfoEnabled()) {

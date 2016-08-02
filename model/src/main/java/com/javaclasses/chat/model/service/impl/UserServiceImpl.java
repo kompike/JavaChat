@@ -253,19 +253,23 @@ public class UserServiceImpl implements UserService {
             log.info("Start deleting user with id: " + userId.getId());
         }
 
-        final Collection<ChatDTO> chats = chatService.findAll();
+        final Collection<ChatDTO> joinedChats = chatService.findChatsByUser(userId);
 
-        for (ChatDTO chat : chats) {
+        for (ChatDTO chat : joinedChats) {
             final ChatId chatId = chat.getChatId();
+            try {
+                chatService.leaveChat(userId, chatId);
+            } catch (ChatMembershipException e) {
+                throw new IllegalStateException("User is not in chat.");
+            }
+        }
+
+        final Collection<ChatDTO> allChats = chatService.findAll();
+
+        for (ChatDTO chat : allChats) {
 
             if (chat.getOwner().equals(userId)) {
-                chatService.delete(chatId);
-            } else if (chatService.getChatUsers(chatId).contains(userId)) {
-                try {
-                    chatService.leaveChat(userId, chatId);
-                } catch (ChatMembershipException e) {
-                    e.printStackTrace();
-                }
+                chatService.delete(chat.getChatId());
             }
         }
 

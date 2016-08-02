@@ -5,6 +5,7 @@ import com.javaclasses.chat.model.dto.MessageDTO;
 import com.javaclasses.chat.model.dto.UserDTO;
 import com.javaclasses.chat.model.entity.tinytype.ChatId;
 import com.javaclasses.chat.model.entity.tinytype.TokenId;
+import com.javaclasses.chat.model.entity.tinytype.UserId;
 import com.javaclasses.chat.model.service.ChatService;
 import com.javaclasses.chat.model.service.UserService;
 import com.javaclasses.chat.model.service.impl.ChatServiceImpl;
@@ -14,7 +15,7 @@ import com.javaclasses.chat.webapp.JsonObject;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 
-import static com.javaclasses.chat.webapp.controller.Constants.*;
+import static com.javaclasses.chat.webapp.HandlerRegistry.*;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 
 /**
@@ -32,7 +33,6 @@ import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 
         final String requestTokenId = request.getParameter(TOKEN_ID_PARAMETER);
         final TokenId tokenId = new TokenId(Long.valueOf(requestTokenId));
-
         return USER_SERVICE.findByToken(tokenId);
     }
 
@@ -54,6 +54,30 @@ import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
             final JsonObject chatJson = new JsonObject();
             chatJson.add(CHAT_ID_PARAMETER, String.valueOf(chatDTO.getChatId().getId()));
             chatJson.add(CHAT_NAME_PARAMETER, chatDTO.getChatName());
+            builder.append(chatJson.generateJson()).append(",");
+        }
+
+        if (builder.length() > 1) {
+            builder.setLength(builder.length() - 1);
+        }
+        builder.append("]");
+
+        return builder.toString();
+    }
+
+    /*package*/ static String getUserChatList(UserId userId) {
+
+        final StringBuilder builder = new StringBuilder("[");
+
+        final Collection<ChatDTO> joinedChats = CHAT_SERVICE.findChatsByUser(userId);
+
+        for (ChatDTO chatDTO : joinedChats) {
+            final JsonObject chatJson = new JsonObject();
+            final ChatId chatId = chatDTO.getChatId();
+            final String messageList = getChatMessages(chatId);
+            chatJson.add(CHAT_ID_PARAMETER, String.valueOf(chatId.getId()));
+            chatJson.add(CHAT_NAME_PARAMETER, chatDTO.getChatName());
+            chatJson.add(MESSAGES_PARAMETER, messageList);
             builder.append(chatJson.generateJson()).append(",");
         }
 
