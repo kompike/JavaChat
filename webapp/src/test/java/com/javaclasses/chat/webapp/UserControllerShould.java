@@ -29,8 +29,8 @@ public class UserControllerShould {
                 responseContent.contains("tokenId"));
         assertTrue("Result must contain userName field with '" + nickname + "' value.",
                 responseContent.contains(nickname));
-        assertTrue("Result must contain message field.",
-                responseContent.contains("User successfully logged in"));
+        assertTrue("Result must contain chatList field.",
+                responseContent.contains("chatList"));
     }
 
     @Test

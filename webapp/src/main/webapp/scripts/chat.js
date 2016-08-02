@@ -1,11 +1,8 @@
 var Chat = function(chatDivId, eventBus, userService, chatService) {
 	
-	var currentScope = {
-		'tokenId' : null,
-		'currentUser' : null
-	};
-	
 	var _initChat = function() {
+
+		localStorage.clear();
 		
 		var registrationDivId = chatDivId + '_register';
 		var userPageDivId = chatDivId + '_room';
@@ -26,8 +23,8 @@ var Chat = function(chatDivId, eventBus, userService, chatService) {
 		eventBus.subscribe(Events.JOINING_CHAT, chatService.onUserJoined);
 		eventBus.subscribe(Events.LEAVING_CHAT, chatService.onUserLeft);
 		eventBus.subscribe(Events.ADDING_NEW_MESSAGE, chatService.onMessageAdded);
-		
-		registrationComponent.initialize();		
+
+		registrationComponent.initialize();
 	};
 	
 	var _onInputFieldEvent = function(inputDivId) {				
@@ -127,8 +124,6 @@ var Chat = function(chatDivId, eventBus, userService, chatService) {
 		}
 		
 		var _onUserLoggedIn = function(data) {
-			currentScope.tokenId = data.tokenId;
-			currentScope.currentUser = data.userName;
 			$('#' + chatDivId + '_login').remove();
 		}
 		
@@ -144,7 +139,7 @@ var Chat = function(chatDivId, eventBus, userService, chatService) {
 	
 	var UserPageComponent = function(_rootDivId) {
 		
-		var _initialize = function() {
+		var _initialize = function(chatInfo) {
 			
 			eventBus.subscribe(Events.CHAT_CREATION_FAILED, _onActionFailed);
 			eventBus.subscribe(Events.CHAT_JOINING_FAILED, _onActionFailed);
@@ -158,13 +153,13 @@ var Chat = function(chatDivId, eventBus, userService, chatService) {
 			$('#' + _rootDivId).append($('<div/>').attr('id', _rootDivId + '_header'));
 			
 			$('#' + _rootDivId + '_header')
-				.append($('<h5/>').html('Hello ' + currentScope.currentUser + '!)'))
+				.append($('<h5/>').html('Hello ' + localStorage.getItem("currentUser") + '!)'))
 				.append($('<input/>').attr({'id': _rootDivId + '_chatName', 'name' : '_chatName', 'type':'text', 'placeholder':'Enter chat name...'}))
 				.append($('<button/>').attr({'id': _rootDivId + '_add_chat', 'class' : 'add_chat'}).text('Add new chat').click(function(){
 					var chatName = $('#' + _rootDivId + '_chatName').val();
 					var chat = {
 						'chatName' : chatName, 
-						'tokenId' : currentScope.tokenId
+						'tokenId' : localStorage.getItem("tokenId")
 					};
 					eventBus.post(Events.NEW_CHAT_CREATION, chat);
 				}))
@@ -173,23 +168,26 @@ var Chat = function(chatDivId, eventBus, userService, chatService) {
 				.append($('<div/>').attr('id', _rootDivId + '_drop'));
 				
 			_onInputFieldEvent('#' + _rootDivId + '_chatName');	
+			_initChatList(chatInfo.chatList);
 		}
 		
 		var _initChatList = function(chatList) {
 			
-			$('#' + _rootDivId + '_drop').html('').append($('<span/>').attr('class', 'select-label').append($('<select/>').attr('id', _rootDivId + '_chat_list')));
-						
-			for (var i = 0; i < chatList.length; i++) {
-				$('#' + _rootDivId + '_chat_list').append($('<option/>').val(chatList[i].chatName).text(chatList[i].chatName));
-			}
-			
-			$('#' + _rootDivId + '_drop')
-				.append($('<button/>').attr({'id': _rootDivId + '_join_chat', 'class' : 'join_chat'}).text('Join chat').click(function(){
-					eventBus.post(Events.JOINING_CHAT, {
-						'chatName' : $('#' + _rootDivId + '_chat_list').val(), 
-						'tokenId': currentScope.tokenId
-					});
-			}))
+			if (chatList.length > 0) {
+				$('#' + _rootDivId + '_drop').html('').append($('<span/>').attr('class', 'select-label').append($('<select/>').attr('id', _rootDivId + '_chat_list')));
+
+				for (var i = 0; i < chatList.length; i++) {
+					$('#' + _rootDivId + '_chat_list').append($('<option/>').val(chatList[i].chatName).text(chatList[i].chatName));
+				}
+
+				$('#' + _rootDivId + '_drop')
+					.append($('<button/>').attr({'id': _rootDivId + '_join_chat', 'class' : 'join_chat'}).text('Join chat').click(function(){
+						eventBus.post(Events.JOINING_CHAT, {
+							'chatName' : $('#' + _rootDivId + '_chat_list').val(),
+							'tokenId': localStorage.getItem("tokenId")
+						});
+					}))
+			}			
 		}
 		
 		var _onChatListUpdated = function(chatList) {
@@ -245,7 +243,7 @@ var Chat = function(chatDivId, eventBus, userService, chatService) {
 						.append($('<span/>').text('x').css({'float':'right', 'color':'white', 'cursor':'pointer', 'title':'Leave chat'}).click(function() {
 							var chatInfo = {
 								'chatName': chatName,
-								'tokenId': currentScope.tokenId
+								'tokenId': localStorage.getItem("tokenId")
 							};
 							eventBus.post(Events.LEAVING_CHAT, chatInfo);
 						})))
@@ -257,7 +255,7 @@ var Chat = function(chatDivId, eventBus, userService, chatService) {
 					.append($('<button/>').attr({'id': chatDivId + '_send', 'class' : 'send_message'}).text('Send').click(function(){
 						var messageInfo = {
 							'message': $('#' + chatDivId + '_input').val(),
-							'tokenId': currentScope.tokenId,
+							'tokenId': localStorage.getItem("tokenId"),
 							'chatName': chatName,
 							'color': $('#' + chatDivId + '_input').css('color')
 						};

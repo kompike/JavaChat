@@ -5,8 +5,8 @@ if (typeof define !== 'function') {
 var ChatService = function(eventBus, serverURL) {
 	
 	var _addChat = function(chatData) {
-		console.log(chatData.chatName);
-		console.log(chatData.tokenId);
+		var name = chatData.chatName;
+		var tokenId = chatData.tokenId;
 		$.post(
 			serverURL + "api/chat/create",
 			{

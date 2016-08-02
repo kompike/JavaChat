@@ -6,10 +6,11 @@ import com.javaclasses.chat.model.dto.UserDTO;
 import com.javaclasses.chat.model.entity.tinytype.ChatId;
 import com.javaclasses.chat.model.entity.tinytype.ChatName;
 import com.javaclasses.chat.model.entity.tinytype.TextColor;
-import com.javaclasses.chat.model.entity.tinytype.TokenId;
-import com.javaclasses.chat.model.service.*;
+import com.javaclasses.chat.model.service.ChatCreationException;
+import com.javaclasses.chat.model.service.ChatMembershipException;
+import com.javaclasses.chat.model.service.ChatService;
+import com.javaclasses.chat.model.service.MessageCreationException;
 import com.javaclasses.chat.model.service.impl.ChatServiceImpl;
-import com.javaclasses.chat.model.service.impl.UserServiceImpl;
 import com.javaclasses.chat.webapp.HandlerRegistry;
 import com.javaclasses.chat.webapp.JsonObject;
 import com.javaclasses.chat.webapp.handler.Handler;
@@ -17,11 +18,10 @@ import com.javaclasses.chat.webapp.handler.RequestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.Collection;
-
-import static javax.servlet.http.HttpServletResponse.*;
 import static com.javaclasses.chat.webapp.controller.Constants.*;
+import static com.javaclasses.chat.webapp.controller.ControllerUtils.*;
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
 
 /**
  * Realization of {@link Handler} interface for chat management
@@ -31,7 +31,6 @@ public class ChatController {
     private final Logger log = LoggerFactory.getLogger(ChatController.class);
 
     private final ChatService chatService = ChatServiceImpl.getInstance();
-    private final UserService userService = UserServiceImpl.getInstance(chatService);
 
     private final HandlerRegistry handlerRegistry = HandlerRegistry.getInstance();
 
@@ -204,66 +203,6 @@ public class ChatController {
                 }
             }
         });
-    }
-
-    private UserDTO getUserByToken(HttpServletRequest request) {
-
-        final String requestTokenId = request.getParameter(TOKEN_ID_PARAMETER);
-        final TokenId tokenId = new TokenId(Long.valueOf(requestTokenId));
-
-        return userService.findByToken(tokenId);
-    }
-
-    private JsonObject getUserNotAuthorizedJson(JsonObject jsonObject) {
-
-        jsonObject.add(ERROR_MESSAGE_PARAMETER, "User not authorized");
-        jsonObject.setResponseStatusCode(SC_FORBIDDEN);
-
-        return jsonObject;
-    }
-
-    private String getChatList() {
-
-        final StringBuilder builder = new StringBuilder("[");
-
-        final Collection<ChatDTO> chatList = chatService.findAll();
-
-        for (ChatDTO chatDTO : chatList) {
-            final JsonObject chatJson = new JsonObject();
-            chatJson.add(CHAT_ID_PARAMETER, String.valueOf(chatDTO.getChatId().getId()));
-            chatJson.add(CHAT_NAME_PARAMETER, chatDTO.getChatName());
-            builder.append(chatJson.generateJson()).append(",");
-        }
-
-        if (builder.length() > 1) {
-            builder.setLength(builder.length() - 1);
-        }
-        builder.append("]");
-
-        return builder.toString();
-    }
-
-    private String getChatMessages(ChatId chatId) {
-
-        final StringBuilder builder = new StringBuilder("[");
-
-        final Collection<MessageDTO> messages = chatService.getChatMessages(chatId);
-
-        for (MessageDTO messageDTO : messages) {
-            final JsonObject chatJson = new JsonObject();
-            final String author = userService.findById(messageDTO.getAuthor()).getUserName();
-            chatJson.add(MESSAGE_PARAMETER, messageDTO.getMessage());
-            chatJson.add(COLOR_PARAMETER, messageDTO.getColor().toString());
-            chatJson.add(AUTHOR_PARAMETER, author);
-            builder.append(chatJson.generateJson()).append(",");
-        }
-
-        if (builder.length() > 1) {
-            builder.setLength(builder.length() - 1);
-        }
-        builder.append("]");
-
-        return builder.toString();
     }
 
     public static ChatController init() {

@@ -37,6 +37,9 @@ var UserService = function(eventBus, serverURL) {
             },
             function(xhr) {
                 var data = eval("(" + xhr + ")");
+                localStorage.setItem('tokenId', data.tokenId);
+                localStorage.setItem('currentUser', data.userName);
+                localStorage.setItem('chatList', data.chatList);
                 eventBus.post(Events.LOGIN_SUCCESSFULL, data);
             }, 'text')
             .fail(function(xhr, status, error) {

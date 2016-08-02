@@ -3,6 +3,7 @@ package com.javaclasses.chat.webapp.controller;
 import com.javaclasses.chat.model.dto.LoginDTO;
 import com.javaclasses.chat.model.dto.RegistrationDTO;
 import com.javaclasses.chat.model.dto.TokenDTO;
+import com.javaclasses.chat.model.service.ChatService;
 import com.javaclasses.chat.model.service.UserAuthenticationException;
 import com.javaclasses.chat.model.service.UserRegistrationException;
 import com.javaclasses.chat.model.service.UserService;
@@ -15,9 +16,10 @@ import com.javaclasses.chat.webapp.handler.RequestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.javaclasses.chat.webapp.controller.Constants.*;
+import static com.javaclasses.chat.webapp.controller.ControllerUtils.getChatList;
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
-import static com.javaclasses.chat.webapp.controller.Constants.*;
 
 /**
  * Realization of {@link Handler} interface for user management
@@ -26,7 +28,8 @@ public class UserController {
 
     private final Logger log = LoggerFactory.getLogger(UserController.class);
 
-    private final UserService userService = UserServiceImpl.getInstance(ChatServiceImpl.getInstance());
+    private final ChatService chatService = ChatServiceImpl.getInstance();
+    private final UserService userService = UserServiceImpl.getInstance(chatService);
     private final HandlerRegistry handlerRegistry = HandlerRegistry.getInstance();
 
     private UserController() {
@@ -50,8 +53,11 @@ public class UserController {
             final JsonObject jsonObject = new JsonObject();
             try {
                 final TokenDTO tokenDTO = userService.login(loginDTO);
+                final String chats = getChatList();
+
                 jsonObject.add(TOKEN_ID_PARAMETER, tokenDTO.getTokenId().toString());
                 jsonObject.add(USER_NAME_PARAMETER, nickname);
+                jsonObject.add(CHAT_LIST_PARAMETER, chats);
                 jsonObject.setResponseStatusCode(SC_OK);
             } catch (UserAuthenticationException e) {
                 jsonObject.add(ERROR_MESSAGE_PARAMETER, e.getMessage());
